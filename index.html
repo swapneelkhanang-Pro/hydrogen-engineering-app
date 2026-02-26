@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<link rel="manifest" href="./manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlkaSize Pro v4 — Alkaline Electrolyser Sizing Tool · Green H₂</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4f8;--surface:#fff;--surface2:#f7fafc;--panel:#1e293b;--panel2:#263449;
+  --teal:#0f766e;--teal-m:#14b8a6;--teal-l:#ccfbf1;--teal-xl:#f0fdfa;
+  --amber:#b45309;--amber-m:#f59e0b;--amber-l:#fef3c7;
+  --blue:#1d4ed8;--blue-m:#3b82f6;--blue-l:#dbeafe;
+  --violet:#6d28d9;--violet-m:#8b5cf6;--violet-l:#ede9fe;
+  --emerald:#047857;--emerald-m:#10b981;--emerald-l:#d1fae5;
+  --rose:#be123c;--rose-m:#f43f5e;--rose-l:#ffe4e6;
+  --orange:#c2410c;--orange-m:#f97316;--orange-l:#ffedd5;
+  --t9:#0f172a;--t7:#1e293b;--t5:#475569;--t4:#64748b;--t3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --sh-s:0 1px 3px rgba(0,0,0,.08);--sh-m:0 4px 16px rgba(0,0,0,.08);
+  --f-d:'Playfair Display',serif;--f-b:'Plus Jakarta Sans',sans-serif;--f-m:'Fira Code',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t7);font-family:var(--f-b);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* HEADER */
+header{background:var(--panel);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:300;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.hd-logo{display:flex;align-items:center;gap:11px}
+.hd-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--teal-m),#0d9488);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 8px rgba(20,184,166,.4)}
+.hd-title{font-family:var(--f-d);font-size:18px;color:#fff;letter-spacing:-.3px}
+.hd-title span{color:var(--teal-m)}
+.hd-sub{font-size:9px;color:var(--t3);letter-spacing:2px;text-transform:uppercase;font-family:var(--f-m)}
+.hd-pills{display:flex;align-items:center;gap:6px}
+.hd-pill{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:3px 10px;font-size:9px;color:var(--t3);font-family:var(--f-m);letter-spacing:.5px}
+.hd-pill span{color:var(--teal-m);font-weight:600}
+
+/* SHELL */
+.shell{display:grid;grid-template-columns:310px 1fr;min-height:calc(100vh - 56px)}
+
+/* LEFT PANEL */
+.lp{background:var(--panel);border-right:1px solid rgba(255,255,255,.05);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.lp-inner{padding:18px 16px}
+.ps-title{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);margin-bottom:9px;font-family:var(--f-m);display:flex;align-items:center;gap:7px}
+.ps-title::before{content:'';width:12px;height:1.5px;background:var(--teal-m);border-radius:1px}
+.ps{margin-bottom:20px}
+.pdiv{height:1px;background:rgba(255,255,255,.06);margin:4px 0 14px}
+
+/* VENDOR CARDS */
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.vc{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:9px 10px;cursor:pointer;transition:all .18s}
+.vc:hover{border-color:rgba(20,184,166,.4);background:rgba(20,184,166,.07)}
+.vc.active{border-color:var(--teal-m);background:rgba(20,184,166,.12);box-shadow:0 0 0 1px rgba(20,184,166,.2)}
+.vc-n{font-weight:700;font-size:12px;color:#e2e8f0}
+.vc.active .vc-n{color:var(--teal-m)}
+.vc-m{font-size:8.5px;color:var(--t3);font-family:var(--f-m);margin-top:2px}
+
+/* FIELDS */
+.fld{margin-bottom:9px}
+.fld label{display:block;font-size:9.5px;color:var(--t4);font-family:var(--f-m);margin-bottom:3px;letter-spacing:.3px}
+.frow{display:flex}
+.frow input,.frow select{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:5px 0 0 5px;color:#fff;font-family:var(--f-m);font-size:12px;font-weight:500;padding:6px 9px;outline:none;transition:all .18s;min-width:0}
+.frow input:focus,.frow select:focus{border-color:var(--teal-m);background:rgba(20,184,166,.08)}
+.frow select{border-radius:5px;cursor:pointer}
+.frow input.nunit{border-radius:5px}
+.utag{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-left:none;border-radius:0 5px 5px 0;padding:6px 7px;font-size:8.5px;color:var(--t4);font-family:var(--f-m);white-space:nowrap;display:flex;align-items:center;gap:3px}
+.atag{background:rgba(20,184,166,.2);color:var(--teal-m);border:1px solid rgba(20,184,166,.3);border-radius:3px;padding:1px 4px;font-size:7.5px}
+
+/* SLIDERS */
+.slrow{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.sllbl{font-size:9.5px;color:var(--t4);font-family:var(--f-m);width:75px;flex-shrink:0}
+.slrow input[type=range]{flex:1;accent-color:var(--teal-m);height:3px;cursor:pointer}
+.slval{font-family:var(--f-m);font-size:10px;font-weight:600;color:var(--teal-m);width:34px;text-align:right}
+.sl-note{font-size:9.5px;color:var(--t4);font-family:var(--f-m);margin-bottom:9px}
+
+/* STORAGE SLIDER */
+.stor-sl{margin-bottom:12px}
+.stor-sl label{display:block;font-size:9.5px;color:var(--t4);font-family:var(--f-m);margin-bottom:5px}
+.stor-opts{display:flex;gap:4px;flex-wrap:wrap}
+.sopt{padding:4px 9px;border-radius:5px;border:1px solid rgba(255,255,255,.12);font-size:10px;font-family:var(--f-m);color:var(--t3);cursor:pointer;transition:all .18s}
+.sopt.active{background:var(--amber);border-color:var(--amber);color:#fff}
+.sopt:hover:not(.active){border-color:var(--amber-m);color:var(--amber-m)}
+
+/* COLLAPSE */
+.coll-btn{width:100%;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:5px;color:var(--t4);font-size:9.5px;padding:6px;cursor:pointer;font-family:var(--f-b);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.coll-btn:hover{border-color:var(--teal-m);color:var(--teal-m)}
+.coll-c{display:none;padding-top:9px}
+.coll-c.open{display:block}
+
+/* CALC BTN */
+.cbtn{width:100%;padding:11px;border:none;border-radius:7px;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--teal-m));color:#fff;font-family:var(--f-b);font-weight:700;font-size:13px;letter-spacing:.5px;transition:all .22s;box-shadow:0 4px 16px rgba(15,118,110,.4)}
+.cbtn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(15,118,110,.5)}
+
+/* RIGHT PANEL */
+.rp{padding:22px;overflow-y:auto}
+
+/* TABS */
+.tab-bar{display:flex;gap:2px;background:var(--surface);border-radius:9px;padding:4px;margin-bottom:20px;box-shadow:var(--sh-s);border:1px solid var(--border);overflow-x:auto;flex-wrap:nowrap}
+.tab-bar::-webkit-scrollbar{height:2px}
+.tb{font-family:var(--f-b);font-weight:600;font-size:11px;padding:6px 14px;cursor:pointer;border-radius:6px;color:var(--t4);transition:all .18s;white-space:nowrap;flex-shrink:0}
+.tb.active{background:var(--teal);color:#fff;box-shadow:0 2px 8px rgba(15,118,110,.3)}
+.tb:hover:not(.active){background:var(--bg);color:var(--t7)}
+.tc{display:none;animation:fdup .22s ease}
+.tc.active{display:block}
+@keyframes fdup{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HD */
+.phd{margin-bottom:18px}
+.phd h2{font-family:var(--f-d);font-size:21px;color:var(--t9);font-weight:700}
+.phd p{font-size:12px;color:var(--t4);margin-top:3px}
+
+/* KPI GRID */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin-bottom:18px}
+.kc{background:var(--surface);border-radius:11px;padding:16px;border:1px solid var(--border);box-shadow:var(--sh-s);position:relative;overflow:hidden}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:11px 11px 0 0}
+.kc.tl::before{background:linear-gradient(90deg,var(--teal),var(--teal-m))}
+.kc.am::before{background:linear-gradient(90deg,var(--amber),var(--amber-m))}
+.kc.bl::before{background:linear-gradient(90deg,var(--blue),var(--blue-m))}
+.kc.vi::before{background:linear-gradient(90deg,var(--violet),var(--violet-m))}
+.kc.em::before{background:linear-gradient(90deg,var(--emerald),var(--emerald-m))}
+.kc.ro::before{background:linear-gradient(90deg,var(--rose),var(--rose-m))}
+.kc.or::before{background:linear-gradient(90deg,var(--orange),var(--orange-m))}
+.kl{font-size:9.5px;color:var(--t4);font-family:var(--f-m);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.kv{font-family:var(--f-d);font-size:28px;font-weight:700;line-height:1;color:var(--t9)}
+.kc.tl .kv{color:var(--teal)}.kc.am .kv{color:var(--amber)}.kc.bl .kv{color:var(--blue)}
+.kc.vi .kv{color:var(--violet)}.kc.em .kv{color:var(--emerald)}.kc.ro .kv{color:var(--rose)}.kc.or .kv{color:var(--orange)}
+.ks{font-size:10px;color:var(--t4);margin-top:4px;font-family:var(--f-m)}
+.kicon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:28px;opacity:.07}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:14px;box-shadow:var(--sh-s)}
+.chd{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;background:var(--surface2)}
+.chd h3{font-weight:700;font-size:12px;color:var(--t9);flex:1;letter-spacing:-.1px}
+.badge{font-size:9px;font-family:var(--f-m);padding:2px 8px;border-radius:20px;font-weight:500}
+.badge.tl{background:var(--teal-l);color:var(--teal);border:1px solid #99f6e4}
+.badge.am{background:var(--amber-l);color:var(--amber);border:1px solid #fcd34d}
+.badge.bl{background:var(--blue-l);color:var(--blue);border:1px solid #93c5fd}
+.badge.em{background:var(--emerald-l);color:var(--emerald);border:1px solid #6ee7b7}
+.badge.vi{background:var(--violet-l);color:var(--violet);border:1px solid #c4b5fd}
+.badge.ro{background:var(--rose-l);color:var(--rose);border:1px solid #fda4af}
+.badge.or{background:var(--orange-l);color:var(--orange);border:1px solid #fdba74}
+
+/* DETAIL TABLE */
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl tr{border-bottom:1px solid var(--border)}
+.dtbl tr:last-child{border-bottom:none}
+.dtbl tr:hover{background:var(--bg)}
+.dtbl td{padding:8px 16px;font-size:11px}
+.dtbl td:first-child{color:var(--t4);font-family:var(--f-m);font-size:10.5px;width:55%}
+.dtbl td:last-child{color:var(--t7);font-family:var(--f-m);font-weight:500;text-align:right}
+.dtbl .hi{color:var(--teal)!important;font-weight:700!important}
+.dtbl .am{color:var(--amber)!important;font-weight:700!important}
+.dtbl .bl{color:var(--blue)!important;font-weight:700!important}
+.dtbl .em{color:var(--emerald)!important;font-weight:700!important}
+.dtbl .vi{color:var(--violet)!important;font-weight:700!important}
+.dtbl .ro{color:var(--rose)!important;font-weight:700!important}
+.dtbl .mu{color:var(--t3)!important;font-size:9.5px!important;font-style:italic}
+.dtbl .shd td{background:var(--bg);color:var(--t4)!important;font-size:8.5px!important;letter-spacing:2px;text-transform:uppercase;padding:5px 16px;font-weight:700!important}
+
+/* TWO/THREE COL */
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.threecol{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.twocol .card,.threecol .card{margin-bottom:0}
+
+/* PERFORMANCE TABLE */
+.ptbl{width:100%;border-collapse:collapse;font-family:var(--f-m);font-size:10.5px}
+.ptbl thead tr{background:var(--panel)}
+.ptbl thead th{color:#e2e8f0;padding:8px 10px;text-align:center;font-weight:600;font-size:9.5px;letter-spacing:.5px}
+.ptbl thead th:first-child{text-align:left}
+.ptbl tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+.ptbl tbody tr:hover{background:var(--teal-xl)}
+.ptbl tbody td{padding:7px 10px;text-align:center;color:var(--t5)}
+.ptbl tbody td:first-child{text-align:left;font-weight:600;color:var(--t7)}
+.ptbl .tot-row td{background:var(--teal-l);font-weight:700;color:var(--teal)!important;border-top:2px solid var(--teal)}
+.ptbl .hl{color:var(--teal)!important;font-weight:700}
+
+/* TRACE */
+.trace{background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:14px;margin:12px 14px 4px;font-family:var(--f-m);font-size:10.5px}
+.trace-hd{font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.tr-row{display:flex;justify-content:space-between;align-items:baseline;gap:7px;padding:3.5px 0;border-bottom:1px solid var(--border)}
+.tr-row:last-child{border-bottom:none}
+.tr-k{flex:1.2;color:var(--t5);font-size:10.5px}
+.tr-e{flex:2;color:var(--t3);font-size:9.5px;font-style:italic;text-align:center}
+.tr-v{white-space:nowrap;font-weight:600;color:var(--teal)}
+.tr-row.hi .tr-v{color:var(--amber)}
+.tr-row.hi .tr-k{color:var(--amber);font-weight:600}
+
+/* PROG */
+.prow{margin-bottom:9px}
+.plbl{display:flex;justify-content:space-between;font-size:10.5px;font-family:var(--f-m);margin-bottom:3px;color:var(--t5)}
+.pbar{height:7px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.pfill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ENERGY DONUT */
+.erow{display:flex;align-items:center;gap:24px;padding:18px}
+.dw{position:relative;width:120px;height:120px;flex-shrink:0}
+.dw svg{transform:rotate(-90deg)}
+.dctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.dc-bv{font-family:var(--f-d);font-weight:700;font-size:17px;color:var(--t9)}
+.dc-bl{font-size:8.5px;color:var(--t4);font-family:var(--f-m);text-transform:uppercase;letter-spacing:1px}
+.lgrid{flex:1;display:flex;flex-direction:column;gap:7px}
+.li{display:flex;align-items:center;gap:9px}
+.ld{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.ll{flex:1;font-size:11px;color:var(--t5)}
+.lv{font-weight:700;font-size:12px;color:var(--t9)}
+.lsub{font-size:9.5px;color:var(--t4);font-family:var(--f-m)}
+
+/* INFO/WARN BOXES */
+.ibox{background:var(--blue-l);border:1px solid #bfdbfe;border-radius:7px;padding:10px 13px;margin:12px 14px 4px;font-size:10.5px;color:var(--blue);font-family:var(--f-m);line-height:1.7}
+.wbox{background:var(--amber-l);border:1px solid #fcd34d;border-radius:7px;padding:10px 13px;margin:10px 14px;font-size:10.5px;color:var(--amber);font-family:var(--f-m);line-height:1.7}
+.sbox{background:var(--emerald-l);border:1px solid #6ee7b7;border-radius:7px;padding:10px 13px;margin:10px 14px;font-size:10.5px;color:var(--emerald);font-family:var(--f-m);line-height:1.7}
+
+/* DM compare */
+.dmc{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;padding:14px}
+.dm-card{border-radius:7px;padding:13px;text-align:center;border:1px solid}
+.dm-card.th{background:var(--blue-l);border-color:#93c5fd}
+.dm-card.ve{background:var(--teal-l);border-color:#99f6e4}
+.dm-card.pr{background:var(--amber-l);border-color:#fcd34d}
+.dc-lbl{font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;font-family:var(--f-m)}
+.dm-card.th .dc-lbl{color:var(--blue)}.dm-card.ve .dc-lbl{color:var(--teal)}.dm-card.pr .dc-lbl{color:var(--amber)}
+.dc-val{font-family:var(--f-d);font-size:24px;font-weight:700;color:var(--t9);line-height:1}
+.dc-unit{font-size:10px;color:var(--t4);margin-top:3px;font-family:var(--f-m)}
+.dc-note{font-size:9.5px;color:var(--t4);margin-top:7px;padding-top:7px;border-top:1px solid rgba(0,0,0,.08);font-family:var(--f-m)}
+
+/* STORAGE CARDS */
+.stor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:14px}
+.stor-card{border-radius:8px;border:1px solid var(--border);padding:13px;background:var(--surface2);text-align:center}
+.stor-card.active-s{border-color:var(--amber);background:var(--amber-l)}
+.stor-card .sc-hrs{font-family:var(--f-d);font-size:22px;font-weight:700;color:var(--amber)}
+.stor-card .sc-lbl{font-size:9px;color:var(--t4);font-family:var(--f-m);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.stor-card .sc-val{font-family:var(--f-m);font-weight:600;font-size:10.5px;color:var(--t7)}
+.stor-card .sc-sub{font-size:9px;color:var(--t4);font-family:var(--f-m)}
+
+/* CABLE */
+.cbl-list{padding:12px 14px}
+.crow{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:6px;margin-bottom:5px;background:var(--bg);border:1px solid var(--border);transition:all .18s}
+.crow.best{border-color:var(--teal);background:var(--teal-xl)}
+.csz{font-family:var(--f-m);font-weight:600;font-size:12px;width:60px;color:var(--t4)}
+.crow.best .csz{color:var(--teal)}
+.cbw{flex:1}
+.cbt{font-size:9.5px;color:var(--t4);font-family:var(--f-m);margin-bottom:3px}
+.cb{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.cbf{height:100%;background:var(--teal-m);border-radius:3px;transition:width .5s}
+.crow.best .cbf{background:var(--teal)}
+.cru{font-family:var(--f-m);font-size:10px;color:var(--blue);width:50px;text-align:right}
+.cbs{background:var(--teal);color:#fff;font-size:8.5px;font-family:var(--f-m);padding:2px 6px;border-radius:9px;font-weight:700}
+
+/* BOQ TABLE */
+.boqt{width:100%;border-collapse:collapse}
+.boqt th{background:var(--bg);padding:9px 13px;text-align:left;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t4);border-bottom:2px solid var(--border);font-family:var(--f-m)}
+.boqt td{padding:8px 13px;border-bottom:1px solid var(--border);font-size:10.5px;font-family:var(--f-m);color:var(--t7)}
+.boqt tr:last-child td{border-bottom:none}
+.boqt tr:hover td{background:var(--bg)}
+
+/* PFD WRAP */
+#pfd-wrap{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:auto;padding:8px;box-shadow:var(--sh-s);min-height:600px}
+
+/* RESPONSIVE */
+@media(max-width:860px){.shell{grid-template-columns:1fr}.lp{position:static;height:auto}.twocol,.threecol{grid-template-columns:1fr}}
+
+/* PLACEHOLDER */
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:280px;gap:11px;text-align:center}
+.phi{font-size:44px;opacity:.2}
+.pht{color:var(--t4);font-size:12px;line-height:1.6}
+.pht strong{color:var(--teal)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd-logo">
+    <div class="hd-icon">⚡</div>
+    <div>
+      <div class="hd-title">Alka<span>Size</span> Pro <span style="color:var(--amber-m)">v4</span></div>
+      <div class="hd-sub">All Vendors · First Principles · Complete System Design</div>
+    </div>
+  </div>
+  <div class="hd-pills">
+    <div class="hd-pill">Stiesdal: <span>${r.nStks||2}×720 cells · 30 bar</span></div>
+    <div class="hd-pill">Rectifier: <span>Statcon · 3200A/bridge</span></div>
+    <div class="hd-pill">Source: <span>First Principles + BOL</span></div>
+    <div class="hd-pill">Rev <span>4.0</span></div>
+  </div>
+</header>
+
+<div class="shell">
+<!-- LEFT PANEL -->
+<div class="lp"><div class="lp-inner">
+  <div class="ps">
+    <div class="ps-title">Stack Vendor</div>
+    <div class="vg">
+      <div class="vc" onclick="setVendor('LONGi',this)"><div class="vc-n">LONGi</div><div class="vc-m">16 bar · 1400 Nm³/stk</div></div>
+      <div class="vc" onclick="setVendor('Perric',this)"><div class="vc-n">Perric/SLG</div><div class="vc-m">15.5 bar · 700 Nm³/stk</div></div>
+      <div class="vc active" onclick="setVendor('Stiesdal',this)"><div class="vc-n">Stiesdal ✓</div><div class="vc-m">30 bar · 1300 Nm³/stk</div></div>
+      <div class="vc" onclick="setVendor('Custom',this)"><div class="vc-n">Custom</div><div class="vc-m">User defined stack cap</div></div>
+    </div>
+  </div>
+  <div class="pdiv"></div>
+
+  <div class="ps">
+    <div class="ps-title">H₂ Production — Stack Basis</div>
+    <div class="fld"><label>Stack Capacity <em style="font-size:8.5px;color:var(--t3)">(per stack, rated)</em></label>
+      <div class="frow"><input type="number" id="stkCapPer" value="1300" oninput="updateInstalledCap()"><div class="utag">Nm³/hr <span class="atag" id="stkCapTag">AUTO</span></div></div></div>
+    <div class="fld"><label>No. of Stacks</label>
+      <div class="frow"><input type="number" id="nStks" value="2" oninput="updateInstalledCap()"><div class="utag">Nos</div></div></div>
+    <div class="fld"><label style="color:#99f6e4">Total Installed Capacity <em style="font-size:8.5px;color:var(--teal-m)">(auto)</em></label>
+      <div class="frow"><input type="number" id="h2Installed" value="2600" readonly style="opacity:.75;cursor:not-allowed"><div class="utag" style="background:rgba(20,184,166,.15);color:var(--teal-m)">Nm³/hr</div></div></div>
+    <div class="fld"><label style="color:#fbbf24">Actual H₂ Produced <em style="font-size:8.5px;color:var(--amber-m)">(after η losses)</em></label>
+      <div class="frow"><input type="number" id="h2Cap" value="2455" readonly style="opacity:.75;cursor:not-allowed"><div class="utag" style="background:rgba(245,158,11,.12);color:var(--amber-m)">Nm³/hr</div></div></div>
+    <div class="fld"><label>Specific Energy (BOL datasheet)</label>
+      <div class="frow"><input type="number" id="specEn" value="5.189" step="0.001"><div class="utag">kWh/Nm³ <span class="atag" id="specTag">AUTO</span></div></div></div>
+    <div class="fld"><label>Faraday Efficiency @ 100%</label>
+      <div class="frow"><input type="number" id="faradayEff" value="0.942" step="0.001"><div class="utag">pu <span class="atag" id="faradTag">AUTO</span></div></div></div>
+    <div class="fld"><label>Operational Inefficiency</label>
+      <div class="frow"><input type="number" id="opIneff" value="0.01" step="0.001"><div class="utag">pu <span class="atag">BOL</span></div></div></div>
+    <div class="fld"><label>Stack Voltage (per stack, BOL 100%)</label>
+      <div class="frow"><input type="number" id="stkV" value="1418"><div class="utag">V DC <span class="atag" id="voltTag">AUTO</span></div></div></div>
+    <div class="fld"><label>Stack Current (per stack)</label>
+      <div class="frow"><input type="number" id="stkA" value="4400"><div class="utag">A DC <span class="atag" id="ampTag">AUTO</span></div></div></div>
+    <div class="fld"><label>Connection Type</label>
+      <div class="frow"><select id="connType">
+        <option value="Parallel">Parallel — 2 stacks/Rect</option>
+        <option value="Series" selected>Series — 2 stacks/Rect</option>
+        <option value="Individual">Individual — 1 stack/Rect</option>
+      </select></div></div>
+  </div>
+  <div class="pdiv"></div>
+
+  <div class="ps">
+    <div class="ps-title">Stack Parameters</div>
+    <div class="fld"><label>Stack Pressure</label>
+      <div class="frow"><input type="number" id="stkPres" value="30" step="0.5"><div class="utag">bar <span class="atag" id="presTag">AUTO</span></div></div></div>
+    <div class="fld"><label>Operating Temperature</label>
+      <div class="frow"><input type="number" id="opTemp" value="80"><div class="utag">°C</div></div></div>
+    <div class="fld"><label>KOH Concentration</label>
+      <div class="frow"><input type="number" id="kohConc" value="30" step="0.5"><div class="utag">% w/w</div></div></div>
+    <div class="fld"><label>DM Water Factor (vendor)</label>
+      <div class="frow"><input type="number" id="dmFactor" value="10" step="0.1"><div class="utag">kg H₂O/kg H₂</div></div></div>
+    <div class="fld"><label>Storage Pressure (tube trailers)</label>
+      <div class="frow"><input type="number" id="storP" value="200"><div class="utag">bar</div></div></div>
+  </div>
+  <div class="pdiv"></div>
+
+  <div class="ps">
+    <div class="ps-title">Storage Duration</div>
+    <div class="stor-sl">
+      <label>Select storage basis:</label>
+      <div class="stor-opts">
+        <div class="sopt" onclick="setStorage(0.5,this)">0.5h</div>
+        <div class="sopt active" onclick="setStorage(1,this)">1h</div>
+        <div class="sopt" onclick="setStorage(2,this)">2h</div>
+        <div class="sopt" onclick="setStorage(3,this)">3h</div>
+        <div class="sopt" onclick="setStorage(4,this)">4h</div>
+        <div class="sopt" onclick="setStorage(6,this)">6h</div>
+      </div>
+    </div>
+    <div class="fld"><label>Storage Temperature</label>
+      <div class="frow"><input type="number" id="storT" value="30"><div class="utag">°C ambient</div></div></div>
+  </div>
+  <div class="pdiv"></div>
+
+  <div class="ps">
+    <div class="ps-title">Renewable Energy</div>
+    <div class="slrow"><div class="sllbl">☀ Solar PV</div><input type="range" id="solPct" min="0" max="100" value="60" oninput="syncSl()"><div class="slval" id="solVal">60%</div></div>
+    <div class="slrow"><div class="sllbl">💨 Wind</div><input type="range" id="wndPct" min="0" max="100" value="30" oninput="syncSl()"><div class="slval" id="wndVal">30%</div></div>
+    <div class="sl-note" id="gridNote">🔌 Grid: 10%</div>
+    <div class="fld"><label>Solar CF</label><div class="frow"><input type="number" id="solCF" value="22"><div class="utag">%</div></div></div>
+    <div class="fld"><label>Wind CF</label><div class="frow"><input type="number" id="wndCF" value="32"><div class="utag">%</div></div></div>
+  </div>
+  <div class="pdiv"></div>
+
+  <div class="ps">
+    <div class="ps-title">Grid & Transformer</div>
+    <div class="fld"><label>Grid Voltage</label><div class="frow"><select id="gridV"><option value="220000">220 kV</option><option value="33000" selected>33 kV</option><option value="11000">11 kV</option></select></div></div>
+    <div class="fld"><label>TX Secondary Voltage</label><div class="frow"><input type="number" id="txSecV" value="415"><div class="utag">V AC</div></div></div>
+    <div class="fld"><label>TX Pulse Config</label><div class="frow"><select id="txPulse"><option value="24" selected>24-pulse (4 secondaries)</option><option value="12">12-pulse (2 secondaries)</option></select></div></div>
+  </div>
+
+  <div class="ps">
+    <div class="ps-title">Engineering Constants</div>
+    <button class="coll-btn" onclick="document.getElementById('cC').classList.toggle('open')">⚙ Show / Edit Constants</button>
+    <div class="coll-c" id="cC">
+      <div style="height:7px"></div>
+      <div class="fld"><label>Rectifier Efficiency</label><div class="frow"><input type="number" id="rectEff" value="0.985" step="0.001"><div class="utag">pu</div></div></div>
+      <div class="fld"><label>Rectifier Power Factor</label><div class="frow"><input type="number" id="rectPF" value="0.95" step="0.001"><div class="utag">pu</div></div></div>
+      <div class="fld"><label>TX Efficiency</label><div class="frow"><input type="number" id="txEff" value="0.99" step="0.001"><div class="utag">pu</div></div></div>
+      <div class="fld"><label>DC Power Margin</label><div class="frow"><input type="number" id="dcMar" value="10"><div class="utag">%</div></div></div>
+      <div class="fld"><label>Design Margin</label><div class="frow"><input type="number" id="desMar" value="10"><div class="utag">%</div></div></div>
+      <div class="fld"><label>Cable Derating</label><div class="frow"><input type="number" id="dering" value="0.99" step="0.01"><div class="utag">pu</div></div></div>
+    </div>
+  </div>
+
+  <button class="cbtn" onclick="runCalc()">⚡  Calculate &amp; Refresh All</button>
+  <div style="height:14px"></div>
+</div></div><!-- /lp -->
+
+<!-- RIGHT PANEL -->
+<div class="rp">
+  <div class="tab-bar">
+    <div class="tb active" onclick="showTab('h2',this)">H₂ Production</div>
+    <div class="tb" onclick="showTab('dm',this)">DM Water</div>
+    <div class="tb" onclick="showTab('loadcalc',this)">Load Calc</div>
+    <div class="tb" onclick="showTab('util',this)">Utility Summary</div>
+    <div class="tb" onclick="showTab('storage',this)">H₂ Storage</div>
+    <div class="tb" onclick="showTab('elec',this)">Electrical</div>
+    <div class="tb" onclick="showTab('cable',this)">Cables</div>
+    <div class="tb" onclick="showTab('pfd',this)">Process Flow</div>
+    <div class="tb" onclick="showTab('vcomp',this)">Vendor Comparison</div>
+    <div class="tb" onclick="showTab('boq',this)">BOQ</div>
+  </div>
+
+  <div id="tc-h2" class="tc active"><div id="r-h2"><div class="ph"><div class="phi">⚗</div><div class="pht">Click <strong>Calculate</strong> to run all calculations</div></div></div></div>
+  <div id="tc-dm" class="tc"><div id="r-dm"><div class="ph"><div class="phi">💧</div><div class="pht">DM Water analysis appears after calculation</div></div></div></div>
+  <div id="tc-loadcalc" class="tc"><div id="r-loadcalc"><div class="ph"><div class="phi">📈</div><div class="pht">Load calculation table after calculation</div></div></div></div>
+  <div id="tc-util" class="tc"><div id="r-util"><div class="ph"><div class="phi">⚙</div><div class="pht">Utility summary after calculation</div></div></div></div>
+  <div id="tc-storage" class="tc"><div id="r-storage"><div class="ph"><div class="phi">🔋</div><div class="pht">Storage sizing after calculation</div></div></div></div>
+  <div id="tc-elec" class="tc"><div id="r-elec"><div class="ph"><div class="phi">⚡</div><div class="pht">Electrical results after calculation</div></div></div></div>
+  <div id="tc-cable" class="tc"><div id="r-cable"><div class="ph"><div class="phi">🔌</div><div class="pht">Cable sizing after calculation</div></div></div></div>
+  <div id="tc-pfd" class="tc"><div id="pfd-wrap"><div class="ph"><div class="phi">📐</div><div class="pht">Process Flow Diagram after calculation</div></div></div></div>
+  <div id="tc-vcomp" class="tc"><div id="r-vcomp"><div class="ph"><div class="phi">⚖</div><div class="pht">Vendor comparison after calculation</div></div></div></div>
+  <div id="tc-boq" class="tc"><div id="r-boq"><div class="ph"><div class="phi">📋</div><div class="pht">BOQ after calculation</div></div></div></div>
+</div>
+</div><!-- /shell -->
+<script>
+// ════════════════════════════════════════════════════════
+// BACKEND CONSTANTS
+// ════════════════════════════════════════════════════════
+const STATCON = { BRIDGE_A:3200, BRIDGES_PER_SET:15, EFF_NORX:0.985, EFF_TX:0.95 };
+const PHYS = { F:96485, MOLVOL:22.414, H2_DEN:0.0899, O2_DEN:1.4289, H2O_MM:18.015, H2_MM:2.016, HHV_H2:285830, E_REV_25:1.229, dEdT:-0.000845, T_STD:298.15 };
+const STD_TX = [630,800,1000,1250,1600,2000,2500,3150,3500,3750,4000,5000,6000,7500,10000,12000,15000,18000,20000,25000];
+const C1 = [{size:185,rating:366,price:7734},{size:240,rating:434,price:9992},{size:300,rating:500,price:12464},{size:400,rating:589,price:16378},{size:500,rating:685,price:20694},{size:630,rating:793,price:26015},{size:800,rating:907,price:33110},{size:1000,rating:1022,price:41388}];
+
+// ════════════════════════════════════════════════════════
+// STIESDAL BOL DATA (from vendor BOL datasheet - confidential)
+// Columns: [load_pct, nStacks, nStandby, opLoad, faradayEff, I_A, V_cell, H2_Nm3hr, O2_Nm3hr, DCwol_kW, DCwl_kW, specDCwol, specDCwl, specAC, DM_pump_kW, deoxy_kW, dryer_kW, comp_kW, dryCT_kW, wetCT_kW, CWpumpDry_kW, CWpumpWet_kW, RODM_kW, totalAC_kW, specAC2]
+const STG_BOL = [
+// [load%, nOpStk, I_A,     V_cell,  H2_Nm3hr,  O2_Nm3hr,   DCwol_kW,  DCwl_kW,   specDCwol, specDCwl,  specAC1,  DM_kW, deoxyKW, dryerKW, compKW,  dryCT_kW, wetCT, CWD, CWW, RODM,  totalAC_kW, specAC2]
+  [1.00, 2, 4400, 1.9694, 2454.97,  1225.01,  12475.6, 12667.9,  5.082,  5.160, 5.189, 25.0,  12.5, 42.5, 450.0,  82.4, 13.9, 45.0, 41.3, 6.55, 13860.3, 5.646],
+  [0.80, 2, 3520, 1.9253, 1962.0,   979.0,    9758.9,  9909.3,   4.974,  5.051, 5.080, 18.0,  12.5, 42.5, 353.2,  65.9, 13.9, 45.0, 41.3, 5.24, 10945.0, 5.579],
+  [0.60, 2, 2640, 1.8816, 1449.7,   723.4,    7153.0,  7263.2,   4.934,  5.010, 5.040, 12.5,  12.5, 42.5, 260.9,  49.5, 13.9, 45.0, 41.3, 3.93,  8144.6, 5.618],
+  [0.40, 2, 1760, 1.8565,  955.3,   476.7,    4705.1,  4777.6,   4.926,  5.001, 5.031,  7.5,  12.5, 42.5, 172.0,  33.0, 13.9, 45.0, 41.3, 2.62,  5508.4, 5.766],
+  [0.30, 2, 1320, 1.8160,  712.1,   355.3,    3451.8,  3505.0,   4.848,  4.922, 4.952,  6.5,  12.5, 42.5, 128.2,  24.7, 13.9, 45.0, 41.3, 1.96,  4162.7, 5.846],
+  [0.20, 2,  880, 1.8201,  472.3,   235.7,    2306.4,  2341.9,   4.883,  4.959, 4.989,  6.5,  12.5, 42.5,  85.0,  16.5, 13.9, 45.0, 41.3, 1.31,  2928.2, 6.200],
+  [0.30, 1, 1320, 1.8160,  356.0,   177.7,    1756.1,  1782.7,   4.932,  5.007, 5.040,  6.5,  12.5, 42.5,  64.1,  12.4, 13.9, 22.5, 41.3, 0.98,  2272.5, 6.383],
+  [0.20, 1,  880, 1.8201,  236.1,   117.8,    1183.4,  1201.2,   5.011,  5.087, 5.138,  6.0,  12.5, 42.5,  42.5,   8.2, 13.9, 22.5, 41.3, 0.65,  1500.0, 6.800],
+];
+
+// Electrolyser Ref Table (load %, cell voltage, faradayEff)
+const STG_REF = [
+  [0.30,1.816,0.915],[0.40,1.857,0.920],[0.50,1.897,0.924],
+  [0.60,1.882,0.929],[0.70,1.903,0.936],[0.75,1.914,0.939],
+  [0.80,1.925,0.942],[0.90,1.947,0.942],[1.00,1.969,0.942],
+];
+
+// Electrical losses from Stiesdal doc (kW at full load)
+const ELEC_LOSSES = {
+  switchYard_EHV: 8.21, mainTX_220_33: 90, switchBoard_33: 4.11,
+  htCable_220_33: 0.72, htCable_33_rect: 1.07, htCable_33_aux: 0.36,
+  ltCable_aux_DB: 7.02, auxTX: 9.5,
+  rectDCbus: 192.3, // at 100%
+};
+
+// DM Feed pump data (load%, dm_lph)
+const DM_PUMP = [
+  [0.30,702],[0.40,936],[0.50,1170],[0.60,1404],[0.70,1638],[0.75,1755],[0.80,1872],[0.90,2106],[1.00,2340]
+];
+
+// Compressor data from Excel (load%, Nm3/hr_dry, shaft_kW, CW_kW, spec_kWNm3, total_kW)
+const COMP_DATA = [
+  [0.30,565,239,5,0.03882],[0.40,787,290,5,0.03369],[0.50,939,360,5,0.03494],
+  [0.60,1153,420,5,0.03313],[0.70,1315,480,5,0.03315],[0.75,1385,516,5,0.03382],
+  [0.80,1462,540,5,0.03352],[0.90,1653,600,5,0.03289],[1.00,1845,660,5,0.03240],
+];
+
+// ════════════════════════════════════════════════════════
+// VENDOR DATABASE
+// ════════════════════════════════════════════════════════
+const VEND = {
+  'LONGi':{stackCap:1400,cells:336,pressure:16,opTemp:89,membrane:'Composite',specEn:4.323,specEnDC:4.323,dmFactor:10.0,kohFactor:6.0,kohConc:28,H2purity:'≥99.8%',startupTime:'20 min',degradation:0.9,faradayEff:0.95,opIneff:0.01,SOL:{I100:10600,V100:571,I75:7950,V75:550},EOL:{I100:10600,V100:634}},
+  'Perric':{stackCap:700,cells:150,pressure:15.5,opTemp:80,membrane:'PPS',specEn:4.421,specEnDC:4.421,dmFactor:10.0,kohFactor:6.0,kohConc:28,H2purity:'≥99.8%',startupTime:'60 min',degradation:3.75,faradayEff:0.97,opIneff:0.01,SOL:{I100:11790,V100:262.5},EOL:{I100:11790,V100:288.75}},
+  'Stiesdal':{stackCap:1300,cells:720,pressure:30,opTemp:80,membrane:'N/A',specEn:5.189,specEnDC:5.082,dmFactor:10.0,kohFactor:5.0,kohConc:30,H2purity:'≥99.8%',startupTime:'—',degradation:null,faradayEff:0.942,opIneff:0.01,SOL:{I100:4400,V100:1418,I75:3520,V75:1419},EOL:{I100:4400,V100:1517}},
+  'Custom':{stackCap:1000,cells:null,pressure:16,opTemp:80,membrane:'N/A',specEn:4.5,specEnDC:4.5,dmFactor:10.0,kohFactor:6.0,kohConc:28,H2purity:'≥99.8%',startupTime:'—',degradation:null,faradayEff:0.94,opIneff:0.01,SOL:{I100:10000,V100:600},EOL:{I100:10000,V100:660}},
+};
+
+// ════════════════════════════════════════════════════════
+// PIPE SIZING LOOKUP (for H2 at high pressure)
+const PIPE_DN = [
+  {dn:25,id:27.2},{dn:32,id:35.9},{dn:40,id:40.9},{dn:50,id:52.5},
+  {dn:65,id:66.6},{dn:80,id:80.9},{dn:100,id:102.3},{dn:125,id:128.2},
+  {dn:150,id:154.1},{dn:200,id:202.7},{dn:250,id:254.5},{dn:300,id:304.8},
+];
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let CUR_VEND = 'Stiesdal', STOR_HRS = 1, RES = null;
+
+function v(id){return parseFloat(document.getElementById(id).value)||0;}
+function n(id){return document.getElementById(id).value;}
+function fmt(x,d=1){if(x===null||isNaN(x)||!isFinite(x))return'—';return parseFloat(x.toFixed(d)).toLocaleString();}
+function fmtN(x,d=1){if(!x&&x!==0)return'—';return parseFloat(x.toFixed(d)).toLocaleString();}
+
+function updateInstalledCap(){
+  const stkPer=parseFloat(document.getElementById('stkCapPer').value)||0;
+  const nS=Math.round(parseFloat(document.getElementById('nStks').value)||1);
+  const installed=stkPer*nS;
+  document.getElementById('h2Installed').value=installed.toFixed(0);
+  const fEff=parseFloat(document.getElementById('faradayEff').value)||0.942;
+  const opI=parseFloat(document.getElementById('opIneff').value)||0.01;
+  const actual=installed*fEff*(1-opI);
+  document.getElementById('h2Cap').value=actual.toFixed(1);
+}
+
+function setVendor(name,el){
+  document.querySelectorAll('.vc').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); CUR_VEND=name;
+  const vd=VEND[name];
+  document.getElementById('stkCapPer').value=vd.stackCap;
+  document.getElementById('specEn').value=vd.specEn;
+  document.getElementById('stkPres').value=vd.pressure;
+  document.getElementById('opTemp').value=vd.opTemp;
+  document.getElementById('kohConc').value=vd.kohConc;
+  document.getElementById('dmFactor').value=vd.dmFactor;
+  document.getElementById('faradayEff').value=vd.faradayEff;
+  document.getElementById('opIneff').value=vd.opIneff;
+  if(vd.SOL){document.getElementById('stkV').value=vd.SOL.V100;document.getElementById('stkA').value=vd.SOL.I100;}
+  const c=name==='Custom';
+  ['specTag','voltTag','ampTag','presTag','stkCapTag','faradTag'].forEach(id=>{const el2=document.getElementById(id);if(el2)el2.style.display=c?'none':'';});
+  updateInstalledCap();
+}
+
+function setStorage(hrs,el){
+  STOR_HRS=hrs;
+  document.querySelectorAll('.sopt').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function syncSl(){
+  const s=parseInt(document.getElementById('solPct').value)||0;
+  const w=parseInt(document.getElementById('wndPct').value)||0;
+  document.getElementById('solVal').textContent=s+'%';
+  document.getElementById('wndVal').textContent=w+'%';
+  document.getElementById('gridNote').textContent='🔌 Grid: '+Math.max(0,100-s-w)+'%';
+}
+
+function showTab(name,el){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tc-'+name).classList.add('active');
+  el.classList.add('active');
+}
+
+function nextTX(kva){return STD_TX.find(r=>r>=kva)||STD_TX[STD_TX.length-1];}
+function cableOpts(curr,cables,der){if(!curr||curr<=0)return[];return cables.map(c=>{const dr=c.rating*der,runs=Math.ceil(curr/dr);return{size:c.size,runs,dr:dr.toFixed(1),net:(runs*dr).toFixed(1),price:c.price};});}
+function bestCable(curr,cables,der){const opts=cableOpts(curr,cables,der).filter(o=>o.runs*o.dr>=curr);return opts.length?opts.sort((a,b)=>a.price*a.runs-b.price*b.runs)[0]:null;}
+
+// Pipe sizing for gas at actual conditions
+function sizePipe(Q_Nm3hr, P_bar, T_C, targetV=10){
+  const Q_act_m3hr = Q_Nm3hr*(101325/(P_bar*1e5))*((T_C+273.15)/273.15);
+  const Q_m3s = Q_act_m3hr/3600;
+  const A_need = Q_m3s/targetV;
+  const D_need = Math.sqrt(4*A_need/Math.PI)*1000; // mm
+  // find smallest DN that gives velocity <= targetV*1.5
+  const pipe = PIPE_DN.find(p=>{const id=p.id/1000;const A=Math.PI*id*id/4;const vel=Q_m3s/A;return vel<=targetV*1.5;});
+  const chosen = pipe||PIPE_DN[PIPE_DN.length-1];
+  const id_m=chosen.id/1000;
+  const vel=Q_m3s/(Math.PI*id_m*id_m/4);
+  return{dn:chosen.dn, id:chosen.id, vel_ms:vel, Q_act_m3hr, D_need_mm:D_need};
+}
+
+// ════════════════════════════════════════════════════════
+// MAIN CALCULATION
+// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// AUXILIARY AC POWER MODEL (First Principles, all vendors)
+// ════════════════════════════════════════════════════════
+function computeAuxAC(h2_Nm3hr, h2_100, loadFrac, storP_bar, pres_bar){
+  if(!storP_bar)storP_bar=200; if(!pres_bar)pres_bar=30;
+  const dm_m3hr=h2_Nm3hr*10*0.0899/1000;
+  const dmPump=dm_m3hr*20;
+  const dryer=15+0.016*h2_Nm3hr;
+  const deox=8+0.003*h2_Nm3hr;
+  const k_=1.41, T_=308.15, ratio_=storP_bar/pres_bar;
+  const W_iso_=(k_/(k_-1))*8.314*T_*(Math.pow(ratio_,(k_-1)/k_)-1);
+  const comp_kW_aux=(h2_Nm3hr*1000/22.414)*W_iso_/3.6e6/0.80;
+  const DC_approx_=h2_Nm3hr*5.0;
+  const heatKW_=DC_approx_*0.22;
+  const coolKW_=heatKW_*0.048;
+  const ro_dm=dm_m3hr*3.5;
+  const base_=25+30+22;
+  return dmPump+dryer+deox+comp_kW_aux+coolKW_+ro_dm+base_;
+}
+
+function runCalc(){
+  const stkCapPer=v('stkCapPer'), nStks=Math.round(v('nStks'));
+  const faradayEff=v('faradayEff'), opIneff=v('opIneff');
+  const h2Installed=stkCapPer*nStks;
+  const h2Cap=h2Installed*faradayEff*(1-opIneff); // actual produced
+  // Update display fields
+  document.getElementById('h2Installed').value=h2Installed.toFixed(0);
+  document.getElementById('h2Cap').value=h2Cap.toFixed(1);
+
+  const specEn=v('specEn'), stkVol=v('stkV'), stkAmp=v('stkA'), conn=n('connType');
+  const pres=v('stkPres'), tempC=v('opTemp'), kohC=v('kohConc')/100;
+  const dmFac=v('dmFactor'), storP=v('storP'), storT=v('storT');
+  const gridVol=v('gridV'), txSecV=v('txSecV'), txPulse=parseInt(n('txPulse'));
+  const rectEff=v('rectEff'), rectPF=v('rectPF'), txEff=v('txEff');
+  const dcMar=v('dcMar')/100, desMar=v('desMar')/100, der=v('dering');
+  const solP=parseInt(document.getElementById('solPct').value)||0;
+  const wndP=parseInt(document.getElementById('wndPct').value)||0;
+  const grdP=Math.max(0,100-solP-wndP);
+  const solCF=v('solCF')/100, wndCF=v('wndCF')/100;
+  const vd=VEND[CUR_VEND];
+
+  // Physics
+  const T_K=tempC+273.15;
+  const E_rev=PHYS.E_REV_25+PHYS.dEdT*(T_K-PHYS.T_STD);
+  const E_tn=PHYS.HHV_H2/(2*PHYS.F);
+  const mol_per_Nm3=1000/PHYS.MOLVOL;
+  const En_rev=E_rev*2*PHYS.F/3.6e6*mol_per_Nm3;
+  const En_tn=E_tn*2*PHYS.F/3.6e6*mol_per_Nm3;
+  const V_cell=specEn*(PHYS.MOLVOL/1000)*3.6e6/(2*PHYS.F);
+  const nCells=Math.round(stkVol/V_cell);
+  const effVsTn=En_tn/specEn*100;
+
+  // Production
+  const H2_kg=h2Cap*PHYS.H2_DEN, O2_Nm3=h2Cap/2, O2_kg=O2_Nm3*PHYS.O2_DEN;
+
+  // DM water
+  const DM_th_ratio=PHYS.H2O_MM/PHYS.H2_MM;
+  const DM_th_m3hr=h2Cap*DM_th_ratio*PHYS.H2_DEN/1000;
+  const DM_vend_m3hr=h2Cap*dmFac*PHYS.H2_DEN/1000;
+  const DM_prac_m3hr=DM_vend_m3hr*1.05;
+
+  // KOH
+  const KOH_kg=h2Cap*(vd.kohFactor||5.0);
+  const elecVol_m3=(vd.elecFactor||1.2)*h2Cap/1000;
+  const solnDen=kohC<=0.28?1270:1290;
+  const solnMass=elecVol_m3*solnDen;
+
+  // Power
+  const DC_cap_kW=h2Cap*specEn;
+  const DC_stk_kW=nStks*stkVol*stkAmp/1000;
+  const AC_MW=DC_stk_kW/(rectEff*rectPF)/1000;
+
+  // Stiesdal-specific utility at current load (100%)
+  const stig100=STG_BOL[0];
+  const utilTotalKW=CUR_VEND==='Stiesdal'?stig100[21]:null;
+
+  // Renewables
+  const sol_inst=solCF>0?AC_MW*solP/100/solCF:0;
+  const wnd_inst=wndCF>0?AC_MW*wndP/100/wndCF:0;
+  const grd_MW=AC_MW*grdP/100;
+
+  // Electrical sizing
+  const nPairs=conn==='Individual'?0:Math.floor(nStks/2);
+  const nSingles=conn==='Individual'?nStks:nStks%2;
+  const vf=(1+dcMar)*(1+desMar);
+  let pairRV=0,pairRA=0,singRV=0,singRA=0;
+  if(conn==='Parallel'){pairRV=stkVol*vf;pairRA=2*stkAmp;singRV=stkVol*vf;singRA=stkAmp;}
+  else if(conn==='Series'){pairRV=2*stkVol*vf;pairRA=stkAmp;singRV=stkVol*vf;singRA=stkAmp;}
+  else{singRV=stkVol*vf;singRA=stkAmp;}
+  const nRP=nPairs,nRS=nSingles,nRTot=nRP+nRS;
+  const brgP=nPairs>0?Math.ceil(pairRA/STATCON.BRIDGE_A):0;
+  const brgS=nSingles>0?Math.ceil(singRA/STATCON.BRIDGE_A):0;
+  const brgTot=nRP*brgP+nRS*brgS;
+  const nSec=txPulse/6;
+  const dcPP_kW=nPairs>0?DC_stk_kW*(1+dcMar)/Math.max(1,nRP):0;
+  const dcPS_kW=nSingles>0?stkVol*stkAmp*(1+dcMar)/1000:0;
+  const txKVA_P=nPairs>0?dcPP_kW*(1+desMar)*1000/(rectEff*0.95*txEff*1000):0;
+  const txKVA_S=nSingles>0?dcPS_kW*(1+desMar)*1000/(rectEff*0.95*txEff*1000):0;
+  const stdTP=nPairs>0?nextTX(txKVA_P):0;
+  const stdTS=nSingles>0?nextTX(txKVA_S):0;
+  const secKVA_P=stdTP/nSec, secKVA_S=stdTS/nSec;
+  const sqr3=Math.sqrt(3);
+  const txFLC_P=nPairs>0?(secKVA_P*1000)/(sqr3*txSecV):0;
+  const txFLC_S=nSingles>0?(secKVA_S*1000)/(sqr3*txSecV):0;
+  const txOpts_P=nPairs>0?cableOpts(txFLC_P,C1,der):[];
+  const txBest_P=bestCable(txFLC_P,C1,der);
+  const txOpts_S=nSingles>0?cableOpts(txFLC_S,C1,der):[];
+  const txBest_S=bestCable(txFLC_S,C1,der);
+  const skOpts_P=nPairs>0?cableOpts(pairRA,C1,der):[];
+  const skBest_P=bestCable(pairRA,C1,der);
+  const skOpts_S=nSingles>0?cableOpts(singRA,C1,der):[];
+  const skBest_S=bestCable(singRA,C1,der);
+  const txGl_P=txBest_P?txBest_P.runs*nSec*2*nRP:0;
+  const txGl_S=txBest_S?txBest_S.runs*nSec*2*nRS:0;
+  const skGl_P=skBest_P?skBest_P.runs*2*2*nRP:0;
+  const skGl_S=skBest_S?skBest_S.runs*2*2*nRS:0;
+
+  // Storage sizing
+  const H2_stored_Nm3=h2Cap*STOR_HRS;
+  const H2_stored_kg=H2_stored_Nm3*PHYS.H2_DEN;
+  const stor_vol_m3=H2_stored_Nm3*(101325/(storP*1e5))*((storT+273.15)/273.15);
+  const stor_vol_liters=stor_vol_m3*1000;
+  const nTubes_150L=Math.ceil(stor_vol_liters/150);
+  const nTubes_1000L=Math.ceil(stor_vol_liters/1000);
+  const nTubes_6000L=Math.ceil(stor_vol_liters/6000);
+  const nTubes_47L=Math.ceil(stor_vol_liters/47); // standard cylinder
+
+  // Compressor power (from Stiesdal data at 100%)
+  // Compressor power: isentropic from first principles
+  // W_s = (k/(k-1)) * Z * R * T_in * (r^((k-1)/k) - 1)  per mole
+  // For H2: k=1.41, Z=1.0 (ideal), R=8.314 J/mol·K
+  const k_h2=1.41, R_h2=8.314, T_comp=308.15; // 35°C inlet
+  const compRatio=storP/pres;
+  const nCompsInst=Math.ceil(h2Cap/500); // ~500 Nm3/hr per compressor
+  const nCompsOp=Math.min(nCompsInst,5);
+  const h2MolPerHr=h2Cap*(1000/PHYS.MOLVOL);
+  const W_iso_J_mol=k_h2/(k_h2-1)*R_h2*T_comp*(Math.pow(compRatio,(k_h2-1)/k_h2)-1);
+  const W_iso_kW=h2MolPerHr*W_iso_J_mol/3.6e6;
+  const compEff=0.80; // typical AEL compressor isentropic efficiency
+  const comp_kW=W_iso_kW/compEff;
+  const compSpecPow=comp_kW/h2Cap; // kW per Nm3/hr
+
+  // ── LOAD POINTS from first principles (all vendors) ──
+  const loadPcts=[1.0,0.8,0.6,0.4,0.3,0.2];
+  // Faraday eff model: linearly interpolated (lower eff at low load due to parasitic H2 crossover)
+  // η_F(pct) = faradayEff * (0.85 + 0.15*pct) / (0.85 + 0.15*1.0) — gentle decline at low load
+  function faradayAtLoad(pct){return Math.min(faradayEff, faradayEff*(0.88+0.12*pct));}
+  // Cell voltage model: V_cell increases slightly at low load (lower overpotential, but crossover loss)
+  // Use spec energy at 100% → V_cell_100, then scale by load factor (voltage drops ~3% at 20%)
+  const V_cell_100=specEn*(PHYS.MOLVOL/1000)*3.6e6/(2*PHYS.F);
+  function vcellAtLoad(pct){return V_cell_100*(0.965+0.035*pct);}
+  const loadRows=loadPcts.map(pct=>{
+    const I_load=stkAmp*pct;
+    const Vc=vcellAtLoad(pct);
+    const Vs=Vc*vd.cells; // stack voltage
+    const etaF=faradayAtLoad(pct);
+    const h2_row=stkCapPer*nStks*pct*etaF*(1-opIneff);
+    const O2_row=h2_row/2;
+    const DC_no_loss=nStks*I_load*Vs/1000;
+    const rectLoss_pct=0.015; // ~1.5% rectifier + DC bus
+    const DC_w_loss=DC_no_loss*(1+rectLoss_pct);
+    const specDC=DC_no_loss/h2_row;
+    const auxAC=computeAuxAC(h2_row,h2Cap,pct,storP,pres);
+    const specAC=(DC_w_loss+auxAC)/h2_row;
+    const DM_row=h2_row*dmFac*PHYS.H2_DEN/1000;
+    const comp_row=h2_row*compSpecPow;
+    return{pct:Math.round(pct*100),I:I_load,Vc,Vs,etaF,h2:h2_row,O2:O2_row,DC_no:DC_no_loss,DC_w:DC_w_loss,specDC,auxAC,specAC,DM:DM_row,comp:comp_row};
+  });
+
+  // Pipe sizing at different points
+  const pipe_stk_outlet=sizePipe(h2Cap, pres, 80); // stack outlet
+  const pipe_after_gls=sizePipe(h2Cap, pres, 40);   // after cooling
+  const pipe_comp_in=sizePipe(h2Cap, pres, 30);      // compressor inlet
+  const pipe_comp_out=sizePipe(h2Cap, storP, 30);    // compressor outlet
+
+  RES={
+    stkCapPer,h2Installed,h2Cap,faradayEff,opIneff,
+    specEn,nStks,stkVol,stkAmp,conn,pres,tempC,kohC,dmFac,storP,storT,
+    T_K,E_rev,E_tn,En_rev,En_tn,V_cell,nCells,effVsTn,
+    H2_kg,O2_Nm3,O2_kg,
+    DM_th_ratio,DM_th_m3hr,DM_vend_m3hr,DM_prac_m3hr,
+    KOH_kg,elecVol_m3,solnMass,
+    DC_cap_kW,DC_stk_kW,AC_MW,
+    sol_inst,wnd_inst,grd_MW,solP,wndP,grdP,solCF,wndCF,
+    nPairs,nSingles,nRP,nRS,nRTot,pairRV,pairRA,singRV,singRA,
+    brgP,brgS,brgTot,dcPP_kW,dcPS_kW,nSec,secKVA_P,secKVA_S,stdTP,stdTS,txFLC_P,txFLC_S,
+    txOpts_P,txBest_P,txOpts_S,txBest_S,skOpts_P,skBest_P,skOpts_S,skBest_S,
+    txGl_P,txGl_S,skGl_P,skGl_S,
+    txKVA_P,txKVA_S,gridVol,txSecV,txPulse,der,rectEff,rectPF,dcMar,desMar,
+    H2_stored_Nm3,H2_stored_kg,stor_vol_m3,stor_vol_liters,nTubes_150L,nTubes_1000L,nTubes_6000L,nTubes_47L,
+    comp_kW,utilTotalKW,STOR_HRS,
+    pipe_stk_outlet,pipe_after_gls,pipe_comp_in,pipe_comp_out,
+    loadRows,compSpecPow,comp_kW,nCompsInst,nCompsOp,
+    vdName:CUR_VEND, vd
+  };
+
+  renderH2(RES); renderDM(RES); renderLoadCalc(RES); renderUtil(RES);
+  renderStorage(RES); renderElec(RES); renderCables(RES); renderPFD(RES);
+  renderVComp(RES); renderBOQ(RES);
+  showTab('h2',document.querySelector('.tb')); document.getElementById('r-h2').scrollIntoView&&document.getElementById('r-h2').scrollIntoView({block:'start'});
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: H2 PRODUCTION
+// ════════════════════════════════════════════════════════
+function renderH2(r){
+  const CR=47,circ=2*Math.PI*CR;
+  function arc(pct,off){return`stroke-dasharray:${pct/100*circ} ${circ};stroke-dashoffset:${-off/100*circ}`;}
+  document.getElementById('r-h2').innerHTML=`
+  <div class="phd"><h2>H₂ Production Analysis</h2><p>${r.vdName} · ${r.nStks} × ${fmt(r.stkCapPer,0)} Nm³/hr per stack · ${fmt(r.pres,0)} bar · ${fmt(r.tempC,0)}°C · Spec Energy: ${fmt(r.specEn,3)} kWh/Nm³</p></div>
+  <div class="kgrid">
+    <div class="kc tl"><div class="kl">Installed Capacity</div><div class="kv">${fmt(r.h2Installed,0)}</div><div class="ks">Nm³/hr (${r.nStks}×${fmt(r.stkCapPer,0)})</div><div class="kicon">⚡</div></div>
+    <div class="kc am"><div class="kl">Actual H₂ Produced</div><div class="kv">${fmt(r.h2Cap,1)}</div><div class="ks">Nm³/hr · ${fmt(r.H2_kg,1)} kg/hr · η=${fmt(r.faradayEff*100,1)}%</div><div class="kicon">H₂</div></div>
+    <div class="kc em"><div class="kl">O₂ Generation</div><div class="kv">${fmt(r.O2_Nm3,0)}</div><div class="ks">Nm³/hr · ${fmt(r.O2_kg,1)} kg/hr</div><div class="kicon">O₂</div></div>
+    <div class="kc bl"><div class="kl">DC Stack Power</div><div class="kv">${fmt(r.DC_stk_kW/1000,2)}</div><div class="ks">MW from stack V×I (${r.nStks} stacks)</div><div class="kicon">⚡</div></div>
+    <div class="kc vi"><div class="kl">AC Plant Demand</div><div class="kv">${fmt(r.AC_MW,2)}</div><div class="ks">MW total (incl. all aux)</div><div class="kicon">⚙</div></div>
+    <div class="kc ro"><div class="kl">DM Water (vendor)</div><div class="kv">${fmt(r.DM_vend_m3hr,3)}</div><div class="ks">m³/hr</div><div class="kicon">💧</div></div>
+    <div class="kc or"><div class="kl">Utilisation</div><div class="kv">${fmt(r.h2Cap/r.h2Installed*100,1)}</div><div class="ks">% of installed capacity</div><div class="kicon">📊</div></div>
+    <div class="kc bl"><div class="kl">Total Plant AC</div><div class="kv">${fmt((r.DC_stk_kW*1.015+r.h2Cap*r.compSpecPow+200)/1000,2)}</div><div class="ks">MW est. (electrolyser + aux)</div><div class="kicon">🏭</div></div>
+  </div>
+  <div class="twocol">
+  <div class="card"><div class="chd"><h3>🔬 Production Calculation Chain</h3><div class="badge tl">Stack Basis → Actual Output</div></div>
+    <div class="trace">
+      <div class="trace-hd">Stack Capacity → Installed → Actual H₂ Production</div>
+      <div class="tr-row"><span class="tr-k">Stack capacity per stack</span><span class="tr-e">Vendor datasheet (BOL)</span><span class="tr-v">${fmt(r.stkCapPer,0)} Nm³/hr</span></div>
+      <div class="tr-row"><span class="tr-k">Number of stacks</span><span class="tr-e">User input</span><span class="tr-v">${r.nStks} Nos</span></div>
+      <div class="tr-row hi"><span class="tr-k">Total installed capacity</span><span class="tr-e">${fmt(r.stkCapPer,0)} × ${r.nStks}</span><span class="tr-v">${fmt(r.h2Installed,0)} Nm³/hr</span></div>
+      <div class="tr-row"><span class="tr-k">Faraday efficiency @ 100%</span><span class="tr-e">From BOL datasheet</span><span class="tr-v">${fmt(r.faradayEff*100,2)}%</span></div>
+      <div class="tr-row"><span class="tr-k">Operational inefficiency</span><span class="tr-e">Startup, idle, H₂ losses</span><span class="tr-v">${fmt(r.opIneff*100,1)}%</span></div>
+      <div class="tr-row hi"><span class="tr-k">Actual H₂ produced</span><span class="tr-e">${fmt(r.h2Installed,0)} × ${fmt(r.faradayEff,3)} × (1−${fmt(r.opIneff,2)})</span><span class="tr-v">${fmt(r.h2Cap,1)} Nm³/hr</span></div>
+      <div class="tr-row"><span class="tr-k">Utilisation factor</span><span class="tr-e">Actual ÷ Installed</span><span class="tr-v">${fmt(r.h2Cap/r.h2Installed*100,2)}%</span></div>
+      <div class="tr-row"><span class="tr-k">H₂ mass flow</span><span class="tr-e">${fmt(r.h2Cap,1)} × 0.0899 kg/Nm³</span><span class="tr-v">${fmt(r.H2_kg,2)} kg/hr</span></div>
+    </div>
+    <div class="trace" style="margin-top:8px">
+      <div class="trace-hd">Thermodynamics — H₂O → H₂ + ½O₂</div>
+      <div class="tr-row"><span class="tr-k">Operating Temperature</span><span class="tr-e">Input</span><span class="tr-v">${fmt(r.tempC,0)}°C (${fmt(r.T_K,1)} K)</span></div>
+      <div class="tr-row"><span class="tr-k">Reversible voltage E_rev</span><span class="tr-e">1.229 + (−8.45×10⁻⁴)(T−298)</span><span class="tr-v">${fmt(r.E_rev,4)} V</span></div>
+      <div class="tr-row"><span class="tr-k">Thermoneutral E_tn</span><span class="tr-e">285,830 / (2 × 96,485)</span><span class="tr-v">${fmt(r.E_tn,4)} V</span></div>
+      <div class="tr-row"><span class="tr-k">Theoretical min energy</span><span class="tr-e">E_rev basis</span><span class="tr-v">${fmt(r.En_rev,3)} kWh/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Thermoneutral energy</span><span class="tr-e">E_tn basis</span><span class="tr-v">${fmt(r.En_tn,3)} kWh/Nm³</span></div>
+      <div class="tr-row hi"><span class="tr-k">Vendor AC spec (${r.vdName})</span><span class="tr-e">BOL datasheet (incl. aux)</span><span class="tr-v">${fmt(r.specEn,3)} kWh/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Stack efficiency vs E_tn</span><span class="tr-e">E_tn ÷ E_vendor × 100</span><span class="tr-v">${fmt(r.effVsTn,1)} %</span></div>
+    </div>
+    <div style="padding:10px 14px">
+      <div class="prow"><div class="plbl"><span>Theoretical minimum (E_rev)</span><span style="color:var(--blue)">${fmt(r.En_rev,2)} kWh/Nm³</span></div><div class="pbar"><div class="pfill" style="width:${fmt(r.En_rev/r.specEn*100,1)}%;background:var(--blue-m)"></div></div></div>
+      <div class="prow"><div class="plbl"><span>Thermoneutral</span><span style="color:var(--emerald)">${fmt(r.En_tn,2)} kWh/Nm³</span></div><div class="pbar"><div class="pfill" style="width:${fmt(r.En_tn/r.specEn*100,1)}%;background:var(--emerald-m)"></div></div></div>
+      <div class="prow"><div class="plbl"><span>Vendor AC spec (${r.vdName})</span><span style="color:var(--teal)">${fmt(r.specEn,2)} kWh/Nm³</span></div><div class="pbar"><div class="pfill" style="width:100%;background:var(--teal)"></div></div></div>
+    </div>
+  </div>
+  <div class="card"><div class="chd"><h3>☀ Renewable Energy</h3><div class="badge am">${fmt(r.AC_MW,2)} MW load</div></div>
+    <div class="erow">
+      <div class="dw">
+        <svg viewBox="0 0 100 100" width="120" height="120">
+          <circle cx="50" cy="50" r="${CR}" fill="none" stroke="var(--bg)" stroke-width="11"/>
+          <circle cx="50" cy="50" r="${CR}" fill="none" stroke="var(--teal-m)" stroke-width="11" style="${arc(r.solP,0)}"/>
+          <circle cx="50" cy="50" r="${CR}" fill="none" stroke="var(--amber-m)" stroke-width="11" style="${arc(r.wndP,r.solP)}"/>
+          <circle cx="50" cy="50" r="${CR}" fill="none" stroke="var(--blue-m)" stroke-width="11" style="${arc(r.grdP,r.solP+r.wndP)}"/>
+        </svg>
+        <div class="dctr"><div class="dc-bv">${fmt(r.AC_MW,1)}</div><div class="dc-bl">MW AC</div></div>
+      </div>
+      <div class="lgrid">
+        <div class="li"><div class="ld" style="background:var(--teal-m)"></div><div class="ll">☀ Solar (${r.solP}%)<div class="lsub">CF=${fmt(r.solCF*100,0)}%</div></div><div><div class="lv" style="color:var(--teal)">${fmt(r.sol_inst,1)} MWp</div><div class="lsub">installed</div></div></div>
+        <div class="li"><div class="ld" style="background:var(--amber-m)"></div><div class="ll">💨 Wind (${r.wndP}%)<div class="lsub">CF=${fmt(r.wndCF*100,0)}%</div></div><div><div class="lv" style="color:var(--amber)">${fmt(r.wnd_inst,1)} MW</div><div class="lsub">installed</div></div></div>
+        <div class="li"><div class="ld" style="background:var(--blue-m)"></div><div class="ll">🔌 Grid (${r.grdP}%)</div><div><div class="lv" style="color:var(--blue)">${fmt(r.grd_MW,2)} MW</div><div class="lsub">firm</div></div></div>
+      </div>
+    </div>
+  </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: DM WATER
+// ════════════════════════════════════════════════════════
+function renderDM(r){
+  const th_L=r.DM_th_m3hr*1000, ve_L=r.DM_vend_m3hr*1000;
+  document.getElementById('r-dm').innerHTML=`
+  <div class="phd"><h2>DM Water Requirement Analysis</h2><p>Theoretical (Faraday's Law) vs Vendor Specified (datasheet: ${r.dmFac} kg H₂O/kg H₂) vs Practical Design (+5%)</p></div>
+  <div class="card"><div class="chd"><h3>💧 Three-Basis Comparison — ${fmt(r.h2Cap,0)} Nm³/hr H₂</h3></div>
+    <div class="dmc">
+      <div class="dm-card th"><div class="dc-lbl">Theoretical — Faraday</div><div class="dc-val">${fmt(r.DM_th_m3hr,3)}</div><div class="dc-unit">m³/hr · ${fmt(th_L,0)} L/hr</div><div class="dc-note">H₂O→H₂+½O₂<br>${fmt(r.DM_th_ratio,3)} kg H₂O/kg H₂<br>Stoichiometric minimum</div></div>
+      <div class="dm-card ve"><div class="dc-lbl">Vendor Specified</div><div class="dc-val">${fmt(r.DM_vend_m3hr,3)}</div><div class="dc-unit">m³/hr · ${fmt(ve_L,0)} L/hr</div><div class="dc-note">Feed water factor<br>${fmt(r.dmFac,1)} kg H₂O/kg H₂<br>${fmt(r.dmFac,1)} kg H₂O/kg H₂</div></div>
+      <div class="dm-card pr"><div class="dc-lbl">Design Basis (+5%)</div><div class="dc-val">${fmt(r.DM_prac_m3hr,3)}</div><div class="dc-unit">m³/hr · ${fmt(r.DM_prac_m3hr*1000,0)} L/hr</div><div class="dc-note">Vendor × 1.05<br>DM plant design flow<br>Blowdown + flushing</div></div>
+    </div>
+  </div>
+  <div class="twocol">
+  <div class="card"><div class="chd"><h3>Derivation — Faraday's Law</h3><div class="badge bl">First Principles</div></div>
+    <div class="trace" style="margin:12px">
+      <div class="trace-hd">Reaction: H₂O(l) → H₂(g) + ½O₂(g)</div>
+      <div class="tr-row"><span class="tr-k">MW H₂O / MW H₂</span><span class="tr-e">18.015 / 2.016</span><span class="tr-v">${fmt(r.DM_th_ratio,3)} kg/kg</span></div>
+      <div class="tr-row"><span class="tr-k">H₂ density NTP</span><span class="tr-e">—</span><span class="tr-v">0.0899 kg/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Water per Nm³ H₂</span><span class="tr-e">${fmt(r.DM_th_ratio,3)} × 0.0899</span><span class="tr-v">${fmt(r.DM_th_ratio*PHYS.H2_DEN,4)} kg/Nm³</span></div>
+      <div class="tr-row hi"><span class="tr-k">Theoretical @ ${fmt(r.h2Cap,0)} Nm³/hr</span><span class="tr-e">flow × factor ÷ 1000</span><span class="tr-v">${fmt(r.DM_th_m3hr,3)} m³/hr</span></div>
+      <div class="tr-row"><span class="tr-k">Vendor spec (${r.vdName})</span><span class="tr-e">${fmt(r.dmFac,1)} kg H₂O/kg H₂</span><span class="tr-v">${fmt(r.DM_vend_m3hr,3)} m³/hr</span></div>
+      <div class="tr-row"><span class="tr-k">Excess vs theoretical</span><span class="tr-e">Losses, purging, flushing</span><span class="tr-v">+${fmt((r.dmFac/r.DM_th_ratio-1)*100,1)}%</span></div>
+    </div>
+  </div>
+  <div class="card"><div class="chd"><h3>Load-Point Table</h3><div class="badge tl">All Turndown Points</div></div>
+    <table class="ptbl">
+      <thead><tr><th>Load %</th><th>H₂ Nm³/hr</th><th>Theoretical (m³/hr)</th><th>Vendor (m³/hr)</th><th>Design +5% (m³/hr)</th><th>Vendor L/hr calc</th></tr></thead>
+      <tbody>
+      ${[100,80,60,40,30,20].map((pct,i)=>{
+        const h2=r.h2Cap*pct/100;
+        const th=(h2*r.DM_th_ratio*PHYS.H2_DEN/1000).toFixed(3);
+        const ve=(h2*r.dmFac*PHYS.H2_DEN/1000).toFixed(3);
+        const pr=(h2*r.dmFac*PHYS.H2_DEN/1000*1.05).toFixed(3);
+        const stg_lph=fmt(h2*r.dmFac*PHYS.H2_DEN,0)+'L/hr';
+        return`<tr${pct===100?' style="background:var(--teal-xl)"':''}><td>${pct}%</td><td>${fmt(h2,0)}</td><td style="color:var(--blue);font-weight:600">${th}</td><td style="color:var(--teal);font-weight:600">${ve}</td><td style="color:var(--amber);font-weight:600">${pr}</td><td>${stg_lph}</td></tr>`;
+      }).join('')}
+      </tbody>
+    </table>
+    <div class="ibox">Feed water quality per Stiesdal: conductivity ≤ 1 μS/cm · Fe ≤ 1 mg/L · Cl⁻ ≤ 2 mg/L · Suspended solids ≤ 1 mg/L · Pressure ~3 barg · Temperature 25–40°C</div>
+  </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: LOAD CALCULATION TABLE (all vendors, first principles)
+// ════════════════════════════════════════════════════════
+function renderLoadCalc(r){
+  const cells=r.vd.cells||Math.round(r.stkVol/r.V_cell)||720;
+  document.getElementById('r-loadcalc').innerHTML=`
+  <div class="phd"><h2>Load Calculation — First Principles</h2>
+    <p>${r.vdName} · ${r.nStks}×${fmt(r.stkCapPer,0)} Nm³/hr per stack · ${fmt(r.pres,0)} bar · ${fmt(r.tempC,0)}°C · ${cells} cells/stack</p></div>
+  <div class="kgrid">
+    <div class="kc tl"><div class="kl">Installed Capacity</div><div class="kv">${fmt(r.h2Installed,0)}</div><div class="ks">Nm³/hr (${r.nStks}×${fmt(r.stkCapPer,0)})</div><div class="kicon">⚡</div></div>
+    <div class="kc am"><div class="kl">Actual @ 100% Load</div><div class="kv">${fmt(r.h2Cap,1)}</div><div class="ks">Nm³/hr · η_F=${fmt(r.faradayEff*100,1)}%</div><div class="kicon">H₂</div></div>
+    <div class="kc bl"><div class="kl">V_cell @ 100% BOL</div><div class="kv">${fmt(r.V_cell,4)}</div><div class="ks">V · Stack = ${fmt(r.stkVol,0)} V</div><div class="kicon">⚡</div></div>
+    <div class="kc vi"><div class="kl">Spec Energy (AC)</div><div class="kv">${fmt(r.specEn,3)}</div><div class="ks">kWh/Nm³ (from datasheet)</div><div class="kicon">🔋</div></div>
+    <div class="kc em"><div class="kl">Compressor Power</div><div class="kv">${fmt(r.comp_kW,0)}</div><div class="ks">kW · ${fmt(r.compSpecPow,4)} kWh/Nm³</div><div class="kicon">⚙</div></div>
+    <div class="kc ro"><div class="kl">E_rev @ ${fmt(r.tempC,0)}°C</div><div class="kv">${fmt(r.En_rev,3)}</div><div class="ks">kWh/Nm³ · Thermoneutral: ${fmt(r.En_tn,3)}</div><div class="kicon">🔬</div></div>
+  </div>
+
+  <div class="card"><div class="chd"><h3>📊 Load Points — H₂ Production & Power (First Principles)</h3>
+    <div class="badge tl">6 Load Points · ${r.vdName} · All Vendors</div></div>
+    <div style="overflow-x:auto">
+    <table class="ptbl">
+      <thead><tr>
+        <th>Load %</th><th>I/stack (A)</th><th>V_cell (V)</th><th>V_stack (V)</th>
+        <th>H₂ (Nm³/hr)</th><th>O₂ (Nm³/hr)</th>
+        <th>DC Power (kW)</th><th>Spec DC (kWh/Nm³)</th>
+        <th>Aux AC (kW)</th><th>Spec AC (kWh/Nm³)</th>
+        <th>η_Faraday</th><th>DM Water (m³/hr)</th>
+      </tr></thead>
+      <tbody>
+      ${r.loadRows.map(d=>`<tr style="${d.pct===100?'background:var(--teal-xl)':''}">
+        <td style="font-weight:700;color:${d.pct===100?'var(--teal)':'var(--t7)'}">${d.pct}%</td>
+        <td style="font-family:var(--f-m)">${fmt(d.I,0)}</td>
+        <td style="color:var(--violet);font-weight:600;font-family:var(--f-m)">${fmt(d.Vc,4)}</td>
+        <td style="font-family:var(--f-m)">${fmt(d.Vs,1)}</td>
+        <td style="color:var(--teal);font-weight:700">${fmt(d.h2,1)}</td>
+        <td style="color:var(--orange)">${fmt(d.O2,1)}</td>
+        <td style="color:var(--blue);font-weight:600">${fmt(d.DC_no,1)}</td>
+        <td style="color:var(--blue-m);font-family:var(--f-m)">${fmt(d.specDC,4)}</td>
+        <td style="color:var(--amber)">${fmt(d.auxAC,1)}</td>
+        <td style="color:var(--amber-m);font-weight:700;font-family:var(--f-m)">${fmt(d.specAC,4)}</td>
+        <td style="color:var(--emerald)">${fmt(d.etaF*100,2)}%</td>
+        <td style="color:var(--blue-m)">${fmt(d.DM,3)}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table></div>
+    <div class="ibox">Calculations from first principles: V_cell model uses operating point estimates; H₂ production = StackCap×Stacks×Load%×η_Faraday×(1−op.loss); Power = n×I×V_stack; Aux AC = DM pump + dryer + deox + compressor + cooling + base loads.</div>
+  </div>
+
+  <div class="twocol">
+  <div class="card"><div class="chd"><h3>⚗ Thermodynamics — First Principles</h3><div class="badge bl">Nernst · Faraday</div></div>
+    <div class="trace" style="margin:12px">
+      <div class="trace-hd">H₂O(l) → H₂(g) + ½O₂(g) | ΔG = n·F·E_rev</div>
+      <div class="tr-row"><span class="tr-k">Temperature</span><span class="tr-e">User input</span><span class="tr-v">${fmt(r.tempC,0)}°C (${fmt(r.T_K,1)} K)</span></div>
+      <div class="tr-row"><span class="tr-k">Reversible voltage E_rev(T)</span><span class="tr-e">1.229 + (−8.45×10⁻⁴)(T−298.15)</span><span class="tr-v">${fmt(r.E_rev,5)} V</span></div>
+      <div class="tr-row"><span class="tr-k">Thermoneutral voltage E_tn</span><span class="tr-e">ΔH_HHV/(2F) = 285,830/(2×96,485)</span><span class="tr-v">${fmt(r.E_tn,5)} V</span></div>
+      <div class="tr-row hi"><span class="tr-k">Min energy (theoretical)</span><span class="tr-e">E_rev × 2F / (3.6e6 × mol/Nm³)</span><span class="tr-v">${fmt(r.En_rev,4)} kWh/Nm³</span></div>
+      <div class="tr-row hi"><span class="tr-k">Thermoneutral energy</span><span class="tr-e">E_tn × 2F / (3.6e6 × mol/Nm³)</span><span class="tr-v">${fmt(r.En_tn,4)} kWh/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Vendor DC spec energy</span><span class="tr-e">Datasheet (BOL)</span><span class="tr-v">${fmt(r.specEn,4)} kWh/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Stack efficiency vs E_tn</span><span class="tr-e">E_tn ÷ specEn × 100</span><span class="tr-v">${fmt(r.effVsTn,2)}%</span></div>
+      <div class="tr-row"><span class="tr-k">Operating V_cell (100%)</span><span class="tr-e">specEn × MolVol/(2F) × 1000</span><span class="tr-v">${fmt(r.V_cell,5)} V/cell</span></div>
+      <div class="tr-row"><span class="tr-k">Cells per stack (derived)</span><span class="tr-e">V_stack ÷ V_cell</span><span class="tr-v">${cells} cells</span></div>
+    </div>
+  </div>
+  <div class="card"><div class="chd"><h3>🗜 Compressor Sizing — Isentropic</h3><div class="badge am">First Principles · ASME B31.3</div></div>
+    <div class="trace" style="margin:12px">
+      <div class="trace-hd">W_s = k/(k−1) · Z·R·T · [(P2/P1)^((k−1)/k) − 1]</div>
+      <div class="tr-row"><span class="tr-k">H₂ k (isentropic index)</span><span class="tr-e">CP/CV (diatomic)</span><span class="tr-v">1.41</span></div>
+      <div class="tr-row"><span class="tr-k">Compressibility Z</span><span class="tr-e">~1.0 (ideal gas assumption)</span><span class="tr-v">1.000</span></div>
+      <div class="tr-row"><span class="tr-k">Inlet pressure</span><span class="tr-e">Stack operating pressure</span><span class="tr-v">${fmt(r.pres,0)} bar</span></div>
+      <div class="tr-row"><span class="tr-k">Outlet / storage pressure</span><span class="tr-e">User input</span><span class="tr-v">${fmt(r.storP,0)} bar</span></div>
+      <div class="tr-row"><span class="tr-k">Compression ratio</span><span class="tr-e">P_out / P_in</span><span class="tr-v">${fmt(r.storP/r.pres,2)} : 1</span></div>
+      <div class="tr-row"><span class="tr-k">Inlet temperature</span><span class="tr-e">After GLS + cooling</span><span class="tr-v">35°C (308 K)</span></div>
+      <div class="tr-row hi"><span class="tr-k">Isentropic power</span><span class="tr-e">W_s × ṁ_mol / η_comp</span><span class="tr-v">${fmt(r.comp_kW*0.80,0)} kW (isentropic)</span></div>
+      <div class="tr-row hi"><span class="tr-k">Actual shaft power (η=80%)</span><span class="tr-e">W_iso / η_comp</span><span class="tr-v">${fmt(r.comp_kW,0)} kW</span></div>
+      <div class="tr-row"><span class="tr-k">Specific power</span><span class="tr-e">kW / (Nm³/hr)</span><span class="tr-v">${fmt(r.compSpecPow,5)} kW·hr/Nm³</span></div>
+      <div class="tr-row"><span class="tr-k">Compressors installed</span><span class="tr-e">~500 Nm³/hr each (check with vendor)</span><span class="tr-v">${r.nCompsInst} Nos (${r.nCompsOp} operating)</span></div>
+    </div>
+  </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: UTILITY SUMMARY (first principles, all vendors)
+// ════════════════════════════════════════════════════════
+function renderUtil(r){
+  const LOAD_PCTS=[100,80,60,40,30,20];
+
+  // Compute utility rows for each load point from first principles
+  function utilRow(pct){
+    const h2=r.h2Cap*pct/100;
+    const dm_m3hr=h2*r.dmFac*PHYS.H2_DEN/1000;
+    const dmPump=dm_m3hr*20; // 20 kW per m3/hr
+    const dryer=15+0.016*h2;
+    const deox=8+0.003*h2;
+    const comp=h2*r.compSpecPow;
+    const DC_approx=h2*r.specEn;
+    const heatKW=DC_approx*0.22;
+    const dryCT=heatKW*0.035; // fan+pump ~3.5% of heat
+    const wetCT=heatKW*0.012;
+    const cwPumpDry=dryCT*0.4;
+    const cwPumpWet=wetCT*0.8;
+    const roDM=dm_m3hr*3.5;
+    const ia=22; // constant
+    const N2=pct>=80?120:0; // intermittent
+    const hvac=30; // constant
+    const plc=25; // constant
+    const total=dmPump+dryer+deox+comp+dryCT+wetCT+cwPumpDry+cwPumpWet+roDM+ia+hvac+plc;
+    const specAC2=(DC_approx*1.015+total)/h2; // 1.5% rect loss
+    return{pct,h2,dmPump,dryer,deox,comp,dryCT,wetCT,cwPumpDry,cwPumpWet,roDM,ia,N2,hvac,plc,total,specAC2};
+  }
+  const urows=LOAD_PCTS.map(p=>utilRow(p));
+
+  const rows100=urows[0];
+  document.getElementById('r-util').innerHTML=`
+  <div class="phd"><h2>Utility & Power Summary</h2>
+    <p>${r.vdName} · ${r.nStks}×${fmt(r.stkCapPer,0)} Nm³/hr · First Principles · All load points</p></div>
+  <div class="kgrid">
+    <div class="kc am"><div class="kl">Total AC @ 100%</div><div class="kv">${fmt(rows100.total/1000,2)}</div><div class="ks">MW aux + ${fmt(r.h2Cap*r.specEn*1.015/1000,2)} MW electrolyser</div><div class="kicon">⚡</div></div>
+    <div class="kc tl"><div class="kl">Compressor Power</div><div class="kv">${fmt(rows100.comp,0)}</div><div class="ks">kW at 100% · ${fmt(r.compSpecPow,4)} kWh/Nm³</div><div class="kicon">⚙</div></div>
+    <div class="kc bl"><div class="kl">DM Feed Pump</div><div class="kv">${fmt(rows100.dmPump,1)}</div><div class="ks">kW · ${fmt(r.DM_vend_m3hr,3)} m³/hr</div><div class="kicon">💧</div></div>
+    <div class="kc vi"><div class="kl">H₂ Dryer</div><div class="kv">${fmt(rows100.dryer,1)}</div><div class="ks">kW (PSA/desiccant + heater)</div><div class="kicon">🌡</div></div>
+    <div class="kc em"><div class="kl">Cooling @ 100%</div><div class="kv">${fmt(rows100.dryCT+rows100.wetCT+rows100.cwPumpDry+rows100.cwPumpWet,1)}</div><div class="ks">kW dry CT + wet CT + pumps</div><div class="kicon">❄</div></div>
+    <div class="kc ro"><div class="kl">Base Loads</div><div class="kv">${fmt(rows100.ia+rows100.hvac+rows100.plc,0)}</div><div class="ks">kW PLC+HVAC+Instr.Air (constant)</div><div class="kicon">🏭</div></div>
+  </div>
+
+  <div class="card"><div class="chd"><h3>⚡ AC Power Breakdown — All Load Points</h3><div class="badge tl">First Principles · kW</div></div>
+    <div style="overflow-x:auto">
+    <table class="ptbl">
+      <thead><tr><th style="text-align:left">Subsystem</th>
+        ${LOAD_PCTS.map(p=>`<th>${p}%</th>`).join('')}<th>Model Basis</th></tr></thead>
+      <tbody>
+      ${[
+        ['DM Feed Pump',         urows.map(d=>fmt(d.dmPump,1)), '20 kW per m³/hr DM flow'],
+        ['Deoxygenator',         urows.map(d=>fmt(d.deox,1)),   '8 kW fixed + 0.003×H₂ flow'],
+        ['H₂ Dryer / Purifier',  urows.map(d=>fmt(d.dryer,1)),  '15 kW fixed + 0.016×H₂ flow'],
+        ['Storage Compressor',   urows.map(d=>fmt(d.comp,1)),   'Isentropic: '+fmt(r.compSpecPow,4)+' kW/Nm³'],
+        ['Dry Cooling Tower',    urows.map(d=>fmt(d.dryCT,1)),  '3.5% of waste heat'],
+        ['Wet Cooling Tower',    urows.map(d=>fmt(d.wetCT,1)),  '1.2% of waste heat'],
+        ['CW Pumps (Dry CT)',    urows.map(d=>fmt(d.cwPumpDry,1)), '40% of dry CT kW'],
+        ['CW Pumps (Wet CT)',    urows.map(d=>fmt(d.cwPumpWet,1)), '80% of wet CT kW'],
+        ['RO-DM Package',        urows.map(d=>fmt(d.roDM,1)),   '3.5 kW per m³/hr DM'],
+        ['Instrument Air',       urows.map(d=>fmt(d.ia,0)),     'Constant 22 kW'],
+        ['Lights, HVAC, misc',   urows.map(d=>fmt(d.hvac,0)),   'Constant 30 kW'],
+        ['PLC / UPS',            urows.map(d=>fmt(d.plc,0)),    'Constant 25 kW'],
+      ].map(([lbl,vals,basis],ri)=>`<tr style="${ri%2?'background:var(--bg)':''}">
+        <td style="font-weight:500;color:var(--t7)">${lbl}</td>
+        ${vals.map((v,i)=>`<td style="${i===0?'color:var(--teal);font-weight:700':'color:var(--t5)'}">${v}</td>`).join('')}
+        <td style="color:var(--t3);font-size:9px;font-family:var(--f-m)">${basis}</td>
+      </tr>`).join('')}
+      <tr class="tot-row">
+        <td>TOTAL Aux AC (kW)</td>
+        ${urows.map(d=>`<td style="font-weight:800">${fmt(d.total,0)}</td>`).join('')}<td>—</td>
+      </tr>
+      <tr style="background:var(--blue-l)">
+        <td style="color:var(--blue);font-weight:700">Electrolyser DC+rect (kW)</td>
+        ${urows.map(d=>`<td style="color:var(--blue);font-weight:700">${fmt(d.h2*r.specEn*1.015,0)}</td>`).join('')}<td>1.5% rect loss</td>
+      </tr>
+      <tr style="background:var(--violet-l)">
+        <td style="color:var(--violet);font-weight:700">Spec Power AC-Total (kWh/Nm³)</td>
+        ${urows.map(d=>`<td style="color:var(--violet);font-weight:700">${fmt(d.specAC2,3)}</td>`).join('')}<td>All-in</td>
+      </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="twocol">
+  <div class="card"><div class="chd"><h3>🗜 Compressor Performance vs Load</h3><div class="badge am">Isentropic Model</div></div>
+    <table class="ptbl">
+      <thead><tr><th>Load %</th><th>H₂ (Nm³/hr)</th><th>Comp Power (kW)</th><th>Spec (kWh/Nm³)</th></tr></thead>
+      <tbody>
+      ${urows.map(d=>`<tr>
+        <td style="font-weight:700">${d.pct}%</td>
+        <td>${fmt(d.h2,0)}</td>
+        <td style="color:var(--teal);font-weight:600">${fmt(d.comp,1)}</td>
+        <td style="color:var(--amber)">${fmt(d.comp/d.h2,5)}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="ibox">Compression: ${fmt(r.pres,0)} → ${fmt(r.storP,0)} bar · k=1.41 · η=80% · T_in=35°C</div>
+  </div>
+  <div class="card"><div class="chd"><h3>💧 Utility Quantities @ 100%</h3><div class="badge em">Design Basis</div></div>
+    <table class="dtbl">
+      <tr class="shd"><td colspan="2">Process Flows @ 100% Load</td></tr>
+      <tr><td>H₂ Production (actual)</td><td class="hi">${fmt(r.h2Cap,1)} Nm³/hr · ${fmt(r.H2_kg,1)} kg/hr</td></tr>
+      <tr><td>O₂ Generation</td><td>${fmt(r.O2_Nm3,0)} Nm³/hr · ${fmt(r.O2_kg,1)} kg/hr</td></tr>
+      <tr><td>DM water (vendor, 10 kg/kg)</td><td class="hi">${fmt(r.DM_vend_m3hr,3)} m³/hr · ${fmt(r.DM_vend_m3hr*1000,0)} L/hr</td></tr>
+      <tr><td>DM water (design, +5%)</td><td class="am">${fmt(r.DM_prac_m3hr,3)} m³/hr (RO-DM design flow)</td></tr>
+      <tr><td>Instrument Air</td><td>22 kW continuous · ~100 Nm³/hr</td></tr>
+      <tr><td>Nitrogen (purge)</td><td>Intermittent · ~100 Nm³/purge</td></tr>
+      <tr class="shd"><td colspan="2">KOH Electrolyte (First Fill)</td></tr>
+      <tr><td>KOH concentration</td><td>${fmt(r.kohC*100,0)}% w/w</td></tr>
+      <tr><td>Electrolyte volume (est.)</td><td>${fmt(r.elecVol_m3,2)} m³</td></tr>
+      <tr><td>KOH first fill (dry basis)</td><td class="hi">${fmt(r.KOH_kg,0)} kg · ${fmt(r.KOH_kg/1000,2)} tonnes</td></tr>
+      <tr class="shd"><td colspan="2">Pipe Sizing — Key Lines</td></tr>
+      <tr><td>H₂ main header (${fmt(r.pres,0)} bar)</td><td class="hi">DN${r.pipe_stk_outlet.dn} · ${fmt(r.pipe_stk_outlet.vel_ms,1)} m/s</td></tr>
+      <tr><td>Comp outlet (${fmt(r.storP,0)} bar)</td><td class="hi">DN${r.pipe_comp_out.dn} · ${fmt(r.pipe_comp_out.vel_ms,1)} m/s</td></tr>
+    </table>
+  </div>
+  </div>`;
+}
+
+
+// ════════════════════════════════════════════════════════
+// RENDER: STORAGE SIZING
+// ════════════════════════════════════════════════════════
+function renderStorage(r){
+  const storageOptions=[0.5,1,2,3,4,6];
+  document.getElementById('r-storage').innerHTML=`
+  <div class="phd"><h2>H₂ Storage Sizing</h2><p>Based on ${fmt(r.h2Cap,0)} Nm³/hr production · Storage pressure: ${fmt(r.storP,0)} bar · Ambient: ${fmt(r.storT,0)}°C</p></div>
+  <div class="kgrid">
+    <div class="kc am"><div class="kl">Selected Duration</div><div class="kv">${r.STOR_HRS}h</div><div class="ks">storage</div></div>
+    <div class="kc tl"><div class="kl">H₂ to Store</div><div class="kv">${fmt(r.H2_stored_Nm3,0)}</div><div class="ks">Nm³ · ${fmt(r.H2_stored_kg,0)} kg</div></div>
+    <div class="kc bl"><div class="kl">Water Volume</div><div class="kv">${fmt(r.stor_vol_m3,2)}</div><div class="ks">m³ @ ${r.storP} bar</div></div>
+    <div class="kc vi"><div class="kl">Tube Trailers (1000L)</div><div class="kv">${r.nTubes_1000L}</div><div class="ks">units @ 200 bar</div></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Storage Comparison — All Duration Options</h3><div class="badge am">H₂ @ ${r.storP} bar · ${r.storT}°C</div></div>
+    <div class="stor-grid">
+    ${storageOptions.map(hrs=>{
+      const Nm3=r.h2Cap*hrs, kg=Nm3*PHYS.H2_DEN;
+      const vol_m3=Nm3*(101325/(r.storP*1e5))*((r.storT+273.15)/273.15);
+      const vol_L=vol_m3*1000;
+      const n150=Math.ceil(vol_L/150), n1000=Math.ceil(vol_L/1000), n6000=Math.ceil(vol_L/6000);
+      const isActive=Math.abs(hrs-r.STOR_HRS)<0.01;
+      return`<div class="stor-card${isActive?' active-s':''}">
+        <div class="sc-lbl">Duration</div>
+        <div class="sc-hrs">${hrs}h</div>
+        <div class="sc-val">${fmt(Nm3,0)} Nm³</div>
+        <div class="sc-sub">${fmt(kg,0)} kg H₂</div>
+        <div style="height:8px"></div>
+        <div class="sc-val">${fmt(vol_m3,1)} m³</div>
+        <div class="sc-sub">water vol @ ${r.storP}bar</div>
+        <div style="height:6px"></div>
+        <div class="sc-val">${n1000} × 1000L</div>
+        <div class="sc-sub">tube trailers</div>
+        <div class="sc-val">${n6000} × 6000L</div>
+        <div class="sc-sub">tube bundle</div>
+      </div>`;
+    }).join('')}
+    </div>
+  </div>
+  <div class="twocol">
+  <div class="card"><div class="chd"><h3>Compressor Sizing for Storage</h3><div class="badge vi">Isentropic + Actual</div></div>
+    <table class="dtbl">
+      <tr class="shd"><td colspan="2">System Parameters (${r.vdName} at 100%)</td></tr>
+      <tr><td>H₂ flow to compressor</td><td class="hi">${fmt(r.h2Cap,0)} Nm³/hr</td></tr>
+      <tr><td>Inlet pressure (from GLS)</td><td>${fmt(r.pres,1)} bar</td></tr>
+      <tr><td>Outlet / storage pressure</td><td class="am">${fmt(r.storP,0)} bar</td></tr>
+      <tr><td>Compression ratio</td><td>${fmt(r.storP/r.pres,1)} : 1</td></tr>
+      <tr class="shd"><td colspan="2">Compressor Sizing (First Principles)</td></tr>
+      <tr><td>Isentropic exponent k (H₂)</td><td>1.41 (diatomic)</td></tr>
+      <tr><td>H₂ flow to compressor</td><td class="hi">${fmt(r.h2Cap,0)} Nm³/hr</td></tr>
+      <tr><td>Isentropic power</td><td>${fmt(r.comp_kW*0.80,0)} kW</td></tr>
+      <tr><td>Actual shaft power (η=80%)</td><td class="hi">${fmt(r.comp_kW,0)} kW</td></tr>
+      <tr><td>Specific power</td><td class="am">${fmt(r.compSpecPow,5)} kWh/Nm³</td></tr>
+      <tr class="shd"><td colspan="2">Installed Configuration</td></tr>
+      <tr><td>Compressors (calc, ~500 Nm³/hr each)</td><td class="hi">${r.nCompsInst} Nos operating</td></tr>
+      <tr><td>Power per unit</td><td>${fmt(r.comp_kW/r.nCompsInst,0)} kW each</td></tr>
+    </table>
+  </div>
+  <div class="card"><div class="chd"><h3>Pipe Sizing — H₂ System</h3><div class="badge tl">API 5L / ASME B31.3</div></div>
+    <table class="dtbl">
+      <tr class="shd"><td colspan="2">Stack Outlet (${fmt(r.pres,0)} bar, 80°C)</td></tr>
+      <tr><td>Actual flow rate</td><td>${fmt(r.pipe_stk_outlet.Q_act_m3hr,1)} m³/hr</td></tr>
+      <tr><td>Target pipe size</td><td class="hi">DN${r.pipe_stk_outlet.dn} (ID ${r.pipe_stk_outlet.id} mm)</td></tr>
+      <tr><td>Gas velocity</td><td>${fmt(r.pipe_stk_outlet.vel_ms,1)} m/s</td></tr>
+      <tr class="shd"><td colspan="2">After GLS / Deoxygenator (${fmt(r.pres,0)} bar, 40°C)</td></tr>
+      <tr><td>Pipe size</td><td class="hi">DN${r.pipe_after_gls.dn} (ID ${r.pipe_after_gls.id} mm)</td></tr>
+      <tr><td>Gas velocity</td><td>${fmt(r.pipe_after_gls.vel_ms,1)} m/s</td></tr>
+      <tr class="shd"><td colspan="2">Compressor Inlet (${fmt(r.pres,0)} bar, 30°C)</td></tr>
+      <tr><td>Pipe size</td><td class="hi">DN${r.pipe_comp_in.dn} (ID ${r.pipe_comp_in.id} mm)</td></tr>
+      <tr><td>Gas velocity</td><td>${fmt(r.pipe_comp_in.vel_ms,1)} m/s</td></tr>
+      <tr class="shd"><td colspan="2">Compressor Outlet (${fmt(r.storP,0)} bar)</td></tr>
+      <tr><td>Actual flow at ${r.storP} bar</td><td>${fmt(r.pipe_comp_out.Q_act_m3hr,2)} m³/hr</td></tr>
+      <tr><td>Pipe size</td><td class="hi">DN${r.pipe_comp_out.dn} (ID ${r.pipe_comp_out.id} mm)</td></tr>
+      <tr><td>Gas velocity</td><td>${fmt(r.pipe_comp_out.vel_ms,1)} m/s</td></tr>
+      <tr class="shd"><td colspan="2">Design Standards</td></tr>
+      <tr><td>Material</td><td>SS316L (H₂ service)</td></tr>
+      <tr><td>Piping code</td><td>ASME B31.3 Process</td></tr>
+      <tr><td>Max velocity (gas)</td><td>15 m/s (compressed H₂)</td></tr>
+    </table>
+    <div class="wbox">Pipe wall thickness to be verified per ASME B31.3: t = PD/(2SE + 2YP). Use Schedule 80 minimum for ≥30 bar service. All H₂ service pipes: SS316L, full penetration butt welds, 100% RT.</div>
+  </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: ELECTRICAL
+// ════════════════════════════════════════════════════════
+function renderElec(r){
+  document.getElementById('r-elec').innerHTML=`
+  <div class="phd"><h2>Electrical Sizing</h2><p>Statcon Energiaa · 3200 A/bridge · 24-pulse · ${r.nRTot} rectifiers</p></div>
+  <div class="kgrid">
+    <div class="kc tl"><div class="kl">Total Rectifiers</div><div class="kv">${r.nRTot}</div><div class="ks">${r.nPairs>0?r.nPairs+' paired':''} ${r.nSingles>0?'+ '+r.nSingles+' single':''}</div></div>
+    <div class="kc am"><div class="kl">Statcon Bridges</div><div class="kv">${r.brgTot}</div><div class="ks">${STATCON.BRIDGE_A}A/bridge</div></div>
+    <div class="kc em"><div class="kl">Transformers</div><div class="kv">${r.nRTot}</div><div class="ks">${r.stdTP>0?r.stdTP+' kVA':''}</div></div>
+    <div class="kc bl"><div class="kl">AC Power</div><div class="kv">${fmt(r.AC_MW,2)}</div><div class="ks">MW estimated</div></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Statcon Energiaa — GTP-00000/25-26</h3><div class="badge tl">Backend Constant</div></div>
+    <div class="ibox">Bridge current of <strong>3,200 A</strong> per bridge from Statcon datasheet. "46,000 A each set = 15 bridges × 3,200 A". This is a fixed backend constant, not user-editable.</div>
+    <table class="dtbl">
+      <tr><td>Rated output (full set)</td><td class="hi">46,000 A</td></tr>
+      <tr><td>Configuration</td><td class="hi">15 bridges × 3,200 A</td></tr>
+      <tr><td>Input</td><td>33 kV AC ±10% · 24-pulse via MV TX</td></tr>
+      <tr><td>Peak efficiency</td><td>&gt; 98.5% (no TX)</td></tr>
+      <tr><td>Cooling</td><td>Liquid cooled · IP31 · Outdoor</td></tr>
+    </table>
+  </div>
+  <div class="twocol">
+    <div class="card"><div class="chd"><h3>Dual-Stack Group</h3><div class="badge am">${r.nRP} Rectifiers · ${r.conn}</div></div>
+      <table class="dtbl">
+        <tr><td>Rectifier DC Voltage</td><td class="hi">${fmt(r.pairRV,1)} V</td></tr>
+        <tr><td>Rectifier DC Current</td><td class="hi">${fmt(r.pairRA,0)} A</td></tr>
+        <tr><td>Bridges per rectifier</td><td class="am">${r.brgP} × 3200A</td></tr>
+        <tr><td>TX Calculated</td><td>${fmt(r.txKVA_P,0)} kVA</td></tr>
+        <tr><td>TX Standard Rating</td><td class="hi">${r.stdTP>0?r.stdTP+' kVA':'—'}</td></tr>
+        <tr><td>TX Secondaries × kVA</td><td>${r.nSec} × ${fmt(r.secKVA_P,0)} kVA</td></tr>
+        <tr><td>TX FLC / secondary</td><td class="ro">${fmt(r.txFLC_P,1)} A</td></tr>
+        <tr><td>TX→Rect cable</td><td class="ro">${r.txBest_P?r.txBest_P.runs+'R×1C×'+r.txBest_P.size+'mm²':'—'}</td></tr>
+        <tr><td>Rect→Stack cable (DC)</td><td class="hi">${r.skBest_P?r.skBest_P.runs+'R×1C×'+r.skBest_P.size+'mm²':'—'}</td></tr>
+      </table>
+    </div>
+    <div class="card"><div class="chd"><h3>Single-Stack Group</h3><div class="badge bl">${r.nRS} Rectifiers</div></div>
+      <table class="dtbl">
+        <tr><td>Rectifier DC Voltage</td><td class="hi">${r.nSingles>0?fmt(r.singRV,1)+' V':'N/A'}</td></tr>
+        <tr><td>Rectifier DC Current</td><td class="hi">${r.nSingles>0?fmt(r.singRA,0)+' A':'N/A'}</td></tr>
+        <tr><td>Bridges per rectifier</td><td class="am">${r.nSingles>0?r.brgS+' × 3200A':'—'}</td></tr>
+        <tr><td>TX Standard Rating</td><td class="hi">${r.nSingles>0&&r.stdTS>0?r.stdTS+' kVA':'—'}</td></tr>
+        <tr><td>TX FLC / secondary</td><td class="ro">${r.nSingles>0?fmt(r.txFLC_S,1)+' A':'—'}</td></tr>
+        <tr><td>TX→Rect cable</td><td class="ro">${r.txBest_S?r.txBest_S.runs+'R×1C×'+r.txBest_S.size+'mm²':'—'}</td></tr>
+        <tr><td>Rect→Stack cable (DC)</td><td class="hi">${r.skBest_S?r.skBest_S.runs+'R×1C×'+r.skBest_S.size+'mm²':'—'}</td></tr>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: CABLES
+// ════════════════════════════════════════════════════════
+function renderCables(r){
+  function cblk(title,opts,best,curr,note){
+    if(!opts||!opts.length)return`<div class="card"><div class="chd"><h3>${title}</h3></div><div style="padding:14px;font-size:11px;color:var(--t4);font-family:var(--f-m)">N/A for this config.</div></div>`;
+    const maxR=Math.max(...opts.map(o=>o.runs));
+    const fOpts=opts.filter(o=>o.runs*o.dr>=curr);
+    return`<div class="card"><div class="chd"><h3>${title}</h3><div class="badge tl">${fmt(curr,0)} A</div></div>
+    <div class="cbl-list"><div style="font-size:9.5px;color:var(--t4);font-family:var(--f-m);margin-bottom:9px">${note} · Derating: ${r.der} · KEI Al XLPE Armoured</div>
+    ${fOpts.map(o=>{const isBest=best&&o.size===best.size&&o.runs===best.runs;return`<div class="crow${isBest?' best':''}"><div class="csz">${o.size}<span style="font-size:8.5px;color:var(--t3)">mm²</span></div><div class="cbw"><div class="cbt">${o.runs}R × 1C × ${o.size}mm² → ${o.net} A capacity</div><div class="cb"><div class="cbf" style="width:${Math.round(o.runs/maxR*100)}%"></div></div></div><div class="cru">${o.runs} runs</div>${isBest?'<div class="cbs">✓ USE</div>':''}</div>`;}).join('')}
+    </div></div>`;
+  }
+  document.getElementById('r-cable').innerHTML=`
+  <div class="phd"><h2>Cable Sizing</h2><p>KEI Catalogue — XLPE Al Armoured · 1C per run</p></div>
+  <div style="font-weight:700;font-size:13px;color:var(--teal);margin-bottom:7px">TX → Rectifier (AC Side)</div>
+  ${r.nPairs>0?cblk('Paired Stack TX→Rect',r.txOpts_P,r.txBest_P,r.txFLC_P,r.nSec+' secondaries per TX'):''}
+  ${r.nSingles>0?cblk('Single Stack TX→Rect',r.txOpts_S,r.txBest_S,r.txFLC_S,'1 secondary'):''}
+  <div style="font-weight:700;font-size:13px;color:var(--amber);margin:18px 0 7px">Rectifier → Stack (DC Side)</div>
+  ${r.nPairs>0?cblk('Paired Stack DC',r.skOpts_P,r.skBest_P,r.pairRA,'Per polarity +/−'):''}
+  ${r.nSingles>0?cblk('Single Stack DC',r.skOpts_S,r.skBest_S,r.singRA,'Per polarity'):''}`;
+}
+
+// ════════════════════════════════════════════════════════
+// PIPE SCHEDULE LOOKUP (H2/O2 service, per ASME B31.3)
+// ════════════════════════════════════════════════════════
+function pipeSchedule(dn, P_bar){
+  if(P_bar<=16){return `CS-${dn}NB-SCH STD`;}
+  else if(P_bar<=50){
+    if(dn<=50)return `CS-${dn}NB-SCH 80`;
+    return `CS-${dn}NB-SCH 40`;
+  }else{
+    // High pressure (30-200 bar)
+    return `CS-${dn}NB-SCH160`;
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: PROCESS FLOW DIAGRAM (Engineering Block Diagram Style)
+// ════════════════════════════════════════════════════════
+function renderPFD(r){
+  const W=1280, H=830;
+  const CH2='#c53030',CO2='#c05621',CDM='#2b6cb0',CKO='#6b46c1',CW='#2c7a7b';
+
+  const mainH2Pipe=sizePipe(r.h2Cap, r.pres, 80);
+  const purOut=sizePipe(r.h2Cap, r.pres-0.5, 40);
+  const compIn=sizePipe(r.h2Cap, r.pres, 35);
+  const compOut=sizePipe(r.h2Cap, r.storP, 30);
+  const schMain=pipeSchedule(mainH2Pipe.dn, r.pres);
+  const schHigh=pipeSchedule(80, r.storP);
+  const schCasc=pipeSchedule(50, r.storP);
+  const schMani=pipeSchedule(25, r.storP);
+  const schFill=pipeSchedule(50, 15);
+  const schComp=pipeSchedule(compIn.dn, r.pres);
+
+  const cylWaterVol=160;
+  const cylPerCascade=150;
+  const cylNm3=(cylWaterVol/1000)*r.storP*(273.15/(r.storT+273.15));
+  const cascadeNm3=cylPerCascade*cylNm3;
+  const nCascades=Math.max(4,Math.ceil(r.H2_stored_Nm3/cascadeNm3));
+  const totalStorNm3=nCascades*cascadeNm3;
+  const nComps=5;
+  const compFlowEach=Math.ceil(r.h2Cap/nComps);
+
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="min-width:1100px;display:block;background:white;font-family:'Plus Jakarta Sans',sans-serif">
+  <defs>
+    <marker id="mH2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="${CH2}"/></marker>
+    <marker id="mO2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="${CO2}"/></marker>
+    <marker id="mDM" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="${CDM}"/></marker>
+    <marker id="mKO" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="${CKO}"/></marker>
+  </defs>
+  <rect width="${W}" height="${H}" fill="white" stroke="#718096" stroke-width="2"/>
+  `;
+
+  function R(x,y,w,h,fill,stroke,sw=1.5,rx=3){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" rx="${rx}"/>`;}
+  function T(x,y,t,anchor,fill,sz,bold,fam){return `<text x="${x}" y="${y}" text-anchor="${anchor||'middle'}" fill="${fill||'#2d3748'}" font-size="${sz||9}"${bold?' font-weight="700"':''}${fam?` font-family="${fam}"`:''}>${t}</text>`;}
+  function L(x1,y1,x2,y2,col,w,dash,mkr){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${w||1.8}"${dash?` stroke-dasharray="${dash}"`:''}${mkr?` marker-end="url(#${mkr})"`:''}/>` ;}
+  function IC(x,y,lbl,col){return `<circle cx="${x}" cy="${y}" r="8" fill="white" stroke="${col||'#4a5568'}" stroke-width="1.5"/><text x="${x}" y="${y+3}" text-anchor="middle" fill="${col||'#4a5568'}" font-size="6.5" font-weight="700">${lbl}</text>`;}
+  function GV(x,y,rot){return `<g transform="translate(${x},${y}) rotate(${rot||0})"><polygon points="-6,-5 6,-5 -6,5 6,5" fill="white" stroke="#2d3748" stroke-width="1.5"/><line x1="0" y1="-5" x2="0" y2="-11" stroke="#2d3748" stroke-width="1.5"/><circle cx="0" cy="-13" r="2" fill="#2d3748"/></g>`;}
+  function CV(x,y){return `<g><circle cx="${x}" cy="${y}" r="7" fill="white" stroke="#2d3748" stroke-width="1.5"/><text x="${x}" y="${y+3}" text-anchor="middle" fill="#2d3748" font-size="7" font-weight="700">NRV</text></g>`;}
+  function PSV(x,y){return `<g><polygon points="${x},${y-9} ${x+7},${y+5} ${x-7},${y+5}" fill="#fc8181" stroke="white" stroke-width="0.8"/><text x="${x}" y="${y+15}" text-anchor="middle" fill="#c53030" font-size="6.5" font-weight="700">PSV</text></g>`;}
+  function lineTag(x,y,spec,press,flow,col){
+    return R(x-2,y-11,spec.length*4.5+4,35,'white',col||CH2,1,2)+
+    T(x,y-2,spec,'start',col||CH2,6.5,false,'Fira Code,monospace')+
+    T(x,y+8,`${press} · ${flow}`,'start','#718096',6.5,false,'Fira Code,monospace');
+  }
+
+  // ══ TITLE ══
+  s+=R(0,0,W,36,'#1a202c','#1a202c',0,0);
+  s+=T(W/2,14,'BLOCK DIAGRAM — H₂ GENERATION AND DISTRIBUTION (ALKALINE WATER ELECTROLYSIS)','middle','#e2e8f0',11.5,true);
+  s+=T(W/2,28,`${r.nStks} STACKS × ${fmt(r.stkCapPer,0)} NM3/HR  |  INSTALLED: ${fmt(r.h2Installed,0)} NM3/HR  |  ACTUAL: ${fmt(r.h2Cap,1)} NM3/HR  |  ${fmt(r.pres,0)} BARG  →  ${fmt(r.storP,0)} BARG  |  Source: First Principles + BOL Data`,'middle','#94a3b8',8,false,'Fira Code,monospace');
+
+  // ══════════════════════════════════════════════════════
+  // LEFT BLOCK: ELECTROLYSERS + SEPARATORS
+  // ══════════════════════════════════════════════════════
+  const nSshow=Math.min(r.nStks,3);
+  const BSTART=40;
+
+  // Electrolyser stacks
+  for(let i=0;i<nSshow;i++){
+    const sy=BSTART+i*80;
+    s+=R(10,sy,160,70,'#f0fff4','#276749',1.5,4);
+    s+=T(90,sy+12,`EL-0${i+1}  ${r.vdName} STACK`,'middle','#276749',8.5,true);
+    s+=T(90,sy+24,`${fmt(r.stkCapPer,0)} NM3/HR  |  ${fmt(r.pres,0)} BARG`,'middle','#4a5568',7.5,false,'Fira Code,monospace');
+    s+=T(90,sy+36,`${fmt(r.tempC,0)}°C  |  ${r.nCells||720} CELLS`,'middle','#4a5568',7.5,false,'Fira Code,monospace');
+    s+=T(90,sy+47,`I=${fmt(r.stkAmp,0)}A  V=${fmt(r.stkVol,0)}V  η_F=${fmt(r.faradayEff*100,1)}%`,'middle','#4a5568',7,false,'Fira Code,monospace');
+    s+=T(40,sy+60,'DC+','middle','#c53030',7,true);
+    s+=T(130,sy+60,'DC−','middle','#c53030',7,true);
+    s+=IC(18,sy+35,'TT','#276749');
+    s+=IC(34,sy+35,'PT','#276749');
+    s+=IC(50,sy+35,'LT','#276749');
+    s+=PSV(145,sy+5);
+  }
+  if(r.nStks>3){
+    s+=R(10,BSTART+3*80,160,25,'#f7fff7','#276749',1,3);
+    s+=T(90,BSTART+3*80+16,`+ ${r.nStks-3} MORE STACKS (TOTAL ${r.nStks})`,'middle','#276749',8,false,'Fira Code,monospace');
+  }
+
+  // H2/O2 GLS Separators
+  const GLX=185, GL1Y=BSTART+5, GL2Y=BSTART+5+95;
+  // GLS-H2
+  s+=R(GLX,GL1Y,65,80,'#f0fff4','#276749',1.5,4);
+  s+=T(GLX+32,GL1Y+10,'GLS-H₂','middle','#276749',8,true);
+  s+=T(GLX+32,GL1Y+22,`Ø1.8m×6.9m`,'middle','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(GLX+32,GL1Y+33,`16 M³`,'middle','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(GLX+32,GL1Y+44,`${fmt(r.pres,0)} BARG`,'middle','#276749',8,true,'Fira Code,monospace');
+  s+=IC(GLX+50,GL1Y+20,'LT','#276749');
+  s+=IC(GLX+50,GL1Y+40,'PT','#276749');
+  s+=IC(GLX+50,GL1Y+60,'TT','#276749');
+  s+=PSV(GLX+15,GL1Y-5);
+  // GLS-O2
+  s+=R(GLX,GL2Y,65,80,'#fff7ed','#c05621',1.5,4);
+  s+=T(GLX+32,GL2Y+10,'GLS-O₂','middle',CO2,8,true);
+  s+=T(GLX+32,GL2Y+22,`${fmt(r.pres,0)} BARG`,'middle',CO2,8,true,'Fira Code,monospace');
+  s+=IC(GLX+50,GL2Y+30,'LT',CO2);
+  s+=IC(GLX+50,GL2Y+50,'PT',CO2);
+  s+=PSV(GLX+15,GL2Y-5);
+
+  // Connect stacks to GLS
+  for(let i=0;i<nSshow;i++){
+    const sy=BSTART+i*80;
+    // H2 line (top of stack to GLS)
+    s+=L(170,sy+15,GLX,GL1Y+40,CH2,2.5,'','mH2');
+    s+=GV(173,sy+15);
+    // O2 line (below H2)
+    s+=L(170,sy+40,GLX,GL2Y+40,CO2,1.8,'6,2','mO2');
+  }
+
+  // ══════════════════════════════════════════════════════
+  // HYDROGEN CONTROL MANIFOLD-1
+  // ══════════════════════════════════════════════════════
+  const M1X=265, M1Y=BSTART+10, M1W=90, M1H=60;
+  s+=R(M1X,M1Y,M1W,M1H,'#f7fff7','#276749',1.5,3);
+  s+=R(M1X,M1Y,M1W,13,'#276749','#276749',0,3);
+  s+=T(M1X+M1W/2,M1Y+10,'H2 CONTROL MANIFOLD-1','middle','white',7.5,true);
+  s+=T(M1X+M1W/2,M1Y+26,`${fmt(r.pres,0)} BARG`,'middle','#276749',8.5,true,'Fira Code,monospace');
+  s+=T(M1X+M1W/2,M1Y+38,`${fmt(r.h2Cap,0)} NM3/HR`,'middle','#4a5568',7.5,false,'Fira Code,monospace');
+  s+=IC(M1X+12,M1Y+M1H-8,'PT','#276749');
+  s+=IC(M1X+30,M1Y+M1H-8,'FT',CH2);
+  s+=IC(M1X+50,M1Y+M1H-8,'AT',CH2);
+  s+=IC(M1X+68,M1Y+M1H-8,'LT','#276749');
+  // Line GLS→Manifold-1
+  s+=L(GLX+65,GL1Y+40,M1X,M1Y+M1H/2,CH2,2.5,'','mH2');
+  s+=GV(GLX+75,GL1Y+40);
+  s+=lineTag(GLX+70,GL1Y+25,schMain,`${fmt(r.pres,0)} BARG`,`${fmt(r.h2Cap,0)} NM3/HR`,CH2);
+
+  // O2 outlet from GLS-O2
+  s+=L(GLX+65,GL2Y+20,GLX+120,GL2Y+20,CO2,1.8,'6,2','mO2');
+  s+=T(GLX+75,GL2Y+14,`CS-${Math.max(50,mainH2Pipe.dn)}NB-SCH STD`,'start',CO2,6.5,false,'Fira Code,monospace');
+  s+=T(GLX+75,GL2Y+30,'O₂ TO VENT / EXPORT','start',CO2,7);
+  s+=R(GLX+122,GL2Y+11,65,20,'#fff7ed',CO2,1,3);
+  s+=T(GLX+155,GL2Y+24,`${fmt(r.O2_Nm3,0)} NM3/HR`,'middle',CO2,7.5,false,'Fira Code,monospace');
+
+  // ══════════════════════════════════════════════════════
+  // H2 PURIFIER + SEAL POT
+  // ══════════════════════════════════════════════════════
+  const PX=370, PY=BSTART, PW=115, PH=155;
+  s+=R(PX,PY,PW,PH,'#fffff0','#744210',1.5,4);
+  s+=R(PX,PY,PW,14,'#744210','#744210',0,4);
+  s+=T(PX+PW/2,PY+11,'HYDROGEN PURIFIER','middle','white',8.5,true);
+
+  s+=R(PX+5,PY+18,PW-10,62,'#fef9c3','#92400e',1,2);
+  s+=T(PX+8,PY+29,'INLET SPECIFICATION','start','#92400e',7,true);
+  s+=T(PX+8,PY+41,`PRESSURE: ${fmt(r.pres,0)} BARG`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+52,`MAX FLOW: ${fmt(r.h2Cap,0)} NM3/HR`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+62,`PURITY ≥99.50% · O₂ ≤0.5%`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+72,`H₂O ≤4g/NM3 · MIN: ${fmt(r.h2Cap*0.15,0)} NM3/HR`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+
+  s+=R(PX+5,PY+86,PW-10,60,'#f0fff4','#276749',1,2);
+  s+=T(PX+8,PY+97,'OUTLET SPECIFICATION','start','#276749',7,true);
+  s+=T(PX+8,PY+109,`PRESSURE: ${fmt(r.pres-0.5,1)} BARG`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+120,`PURITY: ≥ 99.999%`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+131,`O₂ ≤ 3 PPMV · DEW PT ≤ −60°C`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+  s+=T(PX+8,PY+142,`MIN FLOW: ${fmt(r.h2Cap*0.15,0)} NM3/HR`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+
+  s+=IC(PX+15,PY+PH-5,'AT','#276749');
+  s+=IC(PX+33,PY+PH-5,'AI','#276749');
+  s+=IC(PX+51,PY+PH-5,'PT','#276749');
+  s+=IC(PX+69,PY+PH-5,'TT','#276749');
+  s+=IC(PX+87,PY+PH-5,'FT',CH2);
+
+  // H2 line Manifold-1 → Purifier
+  s+=L(M1X+M1W,M1Y+M1H/2,PX,PY+PH/2,CH2,2.5,'','mH2');
+  s+=GV(M1X+M1W+10,M1Y+M1H/2);
+  s+=lineTag(M1X+M1W+20,M1Y+M1H/2-12,`${schMain}`,`${fmt(r.pres,0)} BARG`,`${fmt(r.h2Cap,0)} NM3/HR`,CH2);
+
+  // H2 Seal Pot (below purifier)
+  const SPX=PX+15, SPY=PY+PH+25, SPW=55, SPH=70;
+  s+=R(SPX,SPY,SPW,SPH,'#e6f7ff',CDM,1.5,4);
+  s+=T(SPX+SPW/2,SPY+15,'H₂ SEAL','middle','#1a365d',8,true);
+  s+=T(SPX+SPW/2,SPY+28,'POT','middle','#1a365d',8,true);
+  s+=T(SPX+SPW/2,SPY+41,`${fmt(r.pres,0)} BAR`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=IC(SPX+SPW-10,SPY+55,'LT',CDM);
+  s+=IC(SPX+10,SPY+55,'PT',CDM);
+  s+=L(PX+PW/2,PY+PH,PX+PW/2,SPY-5,'#4a5568',1.5,'4,3');
+  s+=L(PX+PW/2,SPY-5,SPX+SPW/2,SPY-5,'#4a5568',1.5,'4,3');
+  s+=L(SPX+SPW/2,SPY-5,SPX+SPW/2,SPY,'#4a5568',1.5,'4,3');
+  s+=T(PX+PW/2+5,PY+PH+12,'50NB SCH10 SS304','start','#718096',6.5,false,'Fira Code,monospace');
+
+  // ══════════════════════════════════════════════════════
+  // MASS FLOW METER SKID + PRV SKID
+  // ══════════════════════════════════════════════════════
+  const MFX=500, MFY=BSTART+10, MFW=80, MFH=55;
+  s+=R(MFX,MFY,MFW,MFH,'#ebf8ff','#2b6cb0',1.5,3);
+  s+=R(MFX,MFY,MFW,12,'#2b6cb0','#2b6cb0',0,3);
+  s+=T(MFX+MFW/2,MFY+9,'MASS FLOW','middle','white',7.5,true);
+  s+=T(MFX+MFW/2,MFY+22,'METER SKID','middle','#2b6cb0',7.5,true);
+  s+=T(MFX+MFW/2,MFY+35,`${fmt(r.h2Cap,0)} NM3/HR`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=T(MFX+MFW/2,MFY+46,'1/4"OD×0.49"WT SS304','middle','#718096',6,false,'Fira Code,monospace');
+  s+=IC(MFX+12,MFY+MFH+10,'FT',CDM);
+  s+=IC(MFX+30,MFY+MFH+10,'FQI',CDM);
+  s+=IC(MFX+50,MFY+MFH+10,'FI',CDM);
+  s+=IC(MFX+68,MFY+MFH+10,'PT','#276749');
+
+  // Purifier→MFM
+  s+=L(PX+PW,PY+30,MFX,MFY+MFH/2,CH2,2.5,'','mH2');
+  s+=GV(PX+PW+12,PY+30);
+  s+=lineTag(PX+PW+20,PY+18,pipeSchedule(purOut.dn,r.pres-0.5),`${fmt(r.pres-0.5,1)} BARG`,`${fmt(r.h2Cap,0)} NM3/HR`,CH2);
+
+  // PRV SKID-1
+  const PRVX=MFX, PRVY=MFY+MFH+30, PRVW=MFW, PRVH=45;
+  s+=R(PRVX,PRVY,PRVW,PRVH,'#fff5f5','#c53030',1.5,3);
+  s+=R(PRVX,PRVY,PRVW,12,'#c53030','#c53030',0,3);
+  s+=T(PRVX+PRVW/2,PRVY+9,'H₂ PRV SKID-1','middle','white',7.5,true);
+  s+=T(PRVX+PRVW/2,PRVY+24,`${fmt(r.pres,0)} BARG → 8–15 BARG`,'middle','#4a5568',7.5,false,'Fira Code,monospace');
+  s+=T(PRVX+PRVW/2,PRVY+37,`CS-80NB-SCH40`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=L(PRVX+PRVW/2,MFY+MFH,PRVX+PRVW/2,PRVY,CH2,1.8,'5,3','mH2');
+
+  // ══════════════════════════════════════════════════════
+  // H2 COMPRESSOR STATIONS (centre, vertical layout)
+  // ══════════════════════════════════════════════════════
+  const CS_X0=610, CS_YS=BSTART+5, CS_W=95, CS_H=75, CS_GAP=10;
+  const CS_COL=['#276749','#2c5282','#6b21a8','#9a3412','#0f766e','#be185d'];
+
+  // Inlet header (from MFM to compressors)
+  const INLHDR_Y=CS_YS-12;
+  s+=L(MFX+MFW,MFY+MFH/3,CS_X0,INLHDR_Y+CS_H/2,CH2,2.5,'','mH2');
+  s+=L(CS_X0,INLHDR_Y+CS_H/2,CS_X0+(CS_W+CS_GAP)*(nComps),INLHDR_Y+CS_H/2,CH2,2.5);
+  s+=lineTag(CS_X0+5,INLHDR_Y+CS_H/2-14,schComp,`${fmt(r.pres,0)} BARG`,`${fmt(r.h2Cap,0)} TO ${fmt(r.h2Cap*0.15,0)} NM3/HR`,CH2);
+
+  // Outlet header
+  const OUTHDR_Y=CS_YS+CS_H+CS_GAP+75;
+  s+=L(CS_X0,OUTHDR_Y,CS_X0+(CS_W+CS_GAP)*(nComps),OUTHDR_Y,CH2,3);
+  s+=lineTag(CS_X0+5,OUTHDR_Y+10,schHigh,`${fmt(r.storP,0)} BARG`,`${fmt(r.h2Cap,0)} TO ${fmt(r.h2Cap*0.15,0)} NM3/HR`,CH2);
+
+  for(let i=0;i<=nComps;i++){
+    const cx=CS_X0+i*(CS_W+CS_GAP);
+    const cy=CS_YS;
+    const isSB=i===nComps;
+    const cc=CS_COL[i];
+    s+=R(cx,cy,CS_W,CS_H,isSB?'#f9fafb':'#f0fff4',cc,1.5,4);
+    s+=T(cx+CS_W/2,cy+12,`H2 COMP STATION C${i+1}${isSB?' (S/B)':''} `,'middle',cc,7.5,true);
+    s+=T(cx+CS_W/2,cy+24,isSB?'STANDBY':'OPERATING','middle','#718096',7);
+    // Compressor circle
+    s+=`<circle cx="${cx+CS_W/2}" cy="${cy+50}" r="18" fill="white" stroke="${cc}" stroke-width="2"/>`;
+    s+=T(cx+CS_W/2,cy+47,'COMP','middle',cc,6.5,true);
+    s+=T(cx+CS_W/2,cy+58,'≈≈','middle',cc,9);
+    // Instruments
+    s+=IC(cx+6,cy+30,'PT',cc);
+    s+=IC(cx+20,cy+30,'TT',cc);
+    s+=IC(cx+CS_W-20,cy+30,'AT',ch2=CH2);
+    s+=IC(cx+CS_W-6,cy+30,'FT',CDM);
+    s+=PSV(cx+CS_W-8,cy-5);
+    // Connect to inlet/outlet headers
+    s+=L(cx+CS_W/2,INLHDR_Y+CS_H/2,cx+CS_W/2,cy,CH2,2.5);
+    s+=GV(cx+CS_W/2,cy-10);
+    s+=L(cx+CS_W/2,cy+CS_H,cx+CS_W/2,OUTHDR_Y,CH2,2.5);
+    s+=GV(cx+CS_W/2,cy+CS_H+5);
+    s+=CV(cx+CS_W/2,cy+CS_H+18);
+    // Flow arrows on inlet/outlet
+    s+=`<polygon points="${cx+CS_W/2-5},${INLHDR_Y+CS_H/2+8} ${cx+CS_W/2+5},${INLHDR_Y+CS_H/2+8} ${cx+CS_W/2},${INLHDR_Y+CS_H/2+16}" fill="${CH2}"/>`;
+    // Capacity label
+    s+=T(cx+CS_W/2,cy+CS_H+42,`MAX ${fmt(compFlowEach,0)} NM3/HR`,'middle','#4a5568',6.5,false,'Fira Code,monospace');
+    s+=T(cx+CS_W/2,cy+CS_H+52,`${fmt(r.storP,0)} BARG`,'middle','#c53030',6.5,true,'Fira Code,monospace');
+  }
+
+  // ══════════════════════════════════════════════════════
+  // H2 CONTROL MANIFOLD-2 + PRV SKID + MANIFOLD-3
+  // ══════════════════════════════════════════════════════
+  const M2X=CS_X0+(CS_W+CS_GAP)*(nComps+1)+5;
+  const M2Y=CS_YS;
+
+  s+=R(M2X,M2Y,90,50,'#f7fff7','#276749',1.5,3);
+  s+=R(M2X,M2Y,90,13,'#276749','#276749',0,3);
+  s+=T(M2X+45,M2Y+10,'H2 CTRL MFLD-2','middle','white',7.5,true);
+  s+=T(M2X+45,M2Y+27,`${fmt(r.storP,0)} BARG`,'middle','#c53030',8,true,'Fira Code,monospace');
+  s+=T(M2X+45,M2Y+40,`${fmt(r.h2Cap,0)} NM3/HR`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=IC(M2X+15,M2Y+50+12,'PT','#c53030');
+  s+=IC(M2X+35,M2Y+50+12,'FT',CH2);
+  s+=IC(M2X+55,M2Y+50+12,'AT',CH2);
+
+  // Output header → Manifold-2
+  s+=L(CS_X0+(CS_W+CS_GAP)*(nComps),OUTHDR_Y,M2X,M2Y+25,CH2,3,'','mH2');
+  s+=lineTag(CS_X0+(CS_W+CS_GAP)*(nComps)+5,OUTHDR_Y-10,schHigh,`${fmt(r.storP,0)} BARG`,`${fmt(r.h2Cap,0)} NM3/HR`,CH2);
+
+  // H2 PRV Skid (200→8-16 barg)
+  s+=R(M2X,M2Y+75,90,45,'#fff5f5','#c53030',1.5,3);
+  s+=R(M2X,M2Y+75,90,12,'#c53030','#c53030',0,3);
+  s+=T(M2X+45,M2Y+84,'H₂ PRV SKID','middle','white',7.5,true);
+  s+=T(M2X+45,M2Y+98,`${fmt(r.storP,0)} BARG →`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=T(M2X+45,M2Y+109,'8-16 BARG','middle','#c53030',7.5,false,'Fira Code,monospace');
+  s+=L(M2X+45,M2Y+50,M2X+45,M2Y+75,CH2,1.8,'4,3','mH2');
+
+  // H2 Control Manifold-3
+  s+=R(M2X,M2Y+135,90,45,'#f7fff7','#276749',1.5,3);
+  s+=R(M2X,M2Y+135,90,13,'#276749','#276749',0,3);
+  s+=T(M2X+45,M2Y+145,'H2 CTRL MFLD-3','middle','white',7.5,true);
+  s+=T(M2X+45,M2Y+160,'8 TO 15 BARG','middle','#276749',8,true,'Fira Code,monospace');
+  s+=T(M2X+45,M2Y+172,`CS-100NB-SCH STD`,'middle','#4a5568',7,false,'Fira Code,monospace');
+  s+=L(M2X+45,M2Y+120,M2X+45,M2Y+135,CH2,1.8,'4,3','mH2');
+  s+=IC(M2X+15,M2Y+178,'PT','#276749');
+  s+=IC(M2X+35,M2Y+178,'FT',CH2);
+  s+=IC(M2X+55,M2Y+178,'AT',CH2);
+  s+=IC(M2X+75,M2Y+178,'TT','#276749');
+
+  // ══════════════════════════════════════════════════════
+  // HYDROGEN CASCADES (bottom right)
+  // ══════════════════════════════════════════════════════
+  const NC=Math.min(nCascades,4);
+  const CASX=CS_X0-10, CASY=H-230;
+  const cascW=Math.min(130,Math.floor((M2X+90-CASX)/NC)-15);
+
+  // Cascade header line
+  s+=L(M2X+45,OUTHDR_Y+15,M2X+45,CASY-10,CH2,2.5);
+  s+=L(M2X+45,CASY-10,CASX+NC*(cascW+12)/2,CASY-10,CH2,2.5);
+  s+=lineTag(M2X+50,OUTHDR_Y+35,schCasc,`${fmt(r.storP,0)} BARG`,`${fmt(r.h2Cap,0)} NM3/HR`,CH2);
+
+  for(let c=0;c<NC;c++){
+    const cx=CASX+c*(cascW+12);
+    const nm3=Math.round(cascadeNm3);
+    s+=L(cx+cascW/2,CASY-10,cx+cascW/2,CASY,CH2,2.5);
+    s+=GV(cx+cascW/2,CASY-5);
+    s+=IC(cx+cascW/2-14,CASY-22,'PT','#c53030');
+
+    s+=R(cx,CASY,cascW,H-CASY-52,'#fff5f5','#c53030',1.5,5);
+    s+=T(cx+cascW/2,CASY+13,`HYDROGEN CASCADE-${c+1}`,'middle','#c53030',8,true);
+
+    // 3×3 cylinder grid
+    for(let ci=0;ci<3;ci++)for(let ri=0;ri<3;ri++){
+      const bw=(cascW-20)/3-4;
+      const bx=cx+8+ci*(bw+4);
+      const by=CASY+20+ri*30;
+      s+=R(bx,by,bw,24,'#fee2e2',CH2,1,8);
+      if(ri===0&&ci===1) s+=T(bx+bw/2,by+15,'H₂','middle',CH2,7,true);
+    }
+    // Specs
+    const specy=CASY+115;
+    s+=R(cx+4,specy,cascW-8,H-specy-54,'white','#e2e8f0',1,2);
+    s+=T(cx+cascW/2,specy+11,'SPECIFICATION','middle','#c53030',7,true);
+    s+=T(cx+6,specy+23,`CYL WATER: ${cylWaterVol} LTRS`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+    s+=T(cx+6,specy+34,`NO OF CYL: ${cylPerCascade} NOS`,'start','#4a5568',6.5,false,'Fira Code,monospace');
+    s+=T(cx+6,specy+45,`PRESSURE: ${fmt(r.storP,0)} BARG`,'start','#c53030',6.5,true,'Fira Code,monospace');
+    s+=T(cx+6,specy+56,`CAPACITY: ${fmt(nm3,0)} NM3`,'start','#276749',6.5,true,'Fira Code,monospace');
+    s+=T(cx+cascW/2,CASY-22,schMani,'middle','#c53030',6.5,false,'Fira Code,monospace');
+  }
+
+  // Total storage label
+  s+=R(CASX,H-48,NC*(cascW+12),18,'#fff5f5','#c53030',1,3);
+  s+=T(CASX+(NC*(cascW+12))/2,H-36,`TOTAL CAPACITY: ${fmt(totalStorNm3,0)} NM3  |  ${nCascades} CASCADES × ${fmt(cascadeNm3,0)} NM3  |  ${r.STOR_HRS}h @ ${fmt(r.h2Cap,0)} NM3/HR`,'middle','#c53030',8,true,'Fira Code,monospace');
+
+  // ══════════════════════════════════════════════════════
+  // H2 TRUCK/QUAD FILLING STATION (bottom left)
+  // ══════════════════════════════════════════════════════
+  const FSX=10, FSY=H-235;
+  s+=R(FSX,FSY,280,H-FSY-52,'#f0f7ff','#2c5282',1.5,4);
+  s+=R(FSX,FSY,280,14,'#2c5282','#2c5282',0,4);
+  s+=T(FSX+140,FSY+10,'H₂ TRUCK/QUAD FILLING STATION','middle','white',8,true);
+
+  const fillPoints=['H₂ FILLING POINT 1','H₂ FILLING POINT 2','H₂ FILLING POINT 3','H₂ FILLING POINT 4'];
+  const ctrlValves=['CONTROL VALVE-1','CONTROL VALVE-2','CONTROL VALVE-3','CONTROL VALVE-4 (QUAD)'];
+  fillPoints.forEach((fp,i)=>{
+    const fy=FSY+20+i*46;
+    s+=R(FSX+8,fy,70,36,'white','#4a5568',1,2);
+    s+=T(FSX+43,fy+14,fp,'middle','#2c5282',7,true);
+    s+=T(FSX+43,fy+28,'8-15 BARG','middle','#4a5568',7,false,'Fira Code,monospace');
+    s+=R(FSX+88,fy+4,165,26,'#f0fff4','#276749',1,2);
+    s+=T(FSX+170,fy+13,`H₂ TRUCK FILLING ${ctrlValves[i]}`,'middle','#276749',7,true);
+    s+=T(FSX+170,fy+24,`${i<3?'CS-50NB':'CS-40NB'}-SCH STD  ·  8-15 BARG`,'middle','#4a5568',6.5,false,'Fira Code,monospace');
+    s+=GV(FSX+84,fy+16);
+    s+=L(FSX+78,fy+16,FSX+88,fy+16,CH2,2);
+    s+=IC(FSX+87,fy+38,'FT',CH2);
+    s+=IC(FSX+107,fy+38,'PT','#276749');
+  });
+
+  // Connect from PRV skid-1 to filling station
+  s+=L(PRVX+PRVW/2,PRVY+PRVH,PRVX+PRVW/2,FSY+100,CH2,2,'','mH2');
+  s+=L(PRVX+PRVW/2,FSY+100,FSX+280,FSY+100,CH2,2);
+  s+=L(FSX+280,FSY+100,FSX+280,FSY+50,CH2,2,'','mH2');
+  s+=T(PRVX+PRVW/2+5,FSY+130,'CS-50NB-SCH STD','start',CH2,6.5,false,'Fira Code,monospace');
+  s+=T(PRVX+PRVW/2+5,FSY+143,'8-15 BARG','start','#718096',6.5,false,'Fira Code,monospace');
+
+  // H2 loading/cylinder pallet filling (left, below filling points)
+  const CYLX=10, CYLY=H-240+4*46+20;
+  if(CYLY<H-60){
+    s+=R(CYLX,CYLY,280,55,'#f5f3ff','#6b46c1',1.5,3);
+    s+=R(CYLX,CYLY,280,12,'#6b46c1','#6b46c1',0,3);
+    s+=T(CYLX+140,CYLY+9,'H₂ LOADING CYLINDER PALLET FILLING STATION','middle','white',7.5,true);
+    s+=T(CYLX+140,CYLY+26,'H₂ CYLINDER FILLING CONTROL VALVE-5','middle','#6b46c1',7,true);
+    s+=T(CYLX+140,CYLY+40,'CS-50NB-SCH STD  ·  8-15 BARG','middle','#4a5568',7,false,'Fira Code,monospace');
+    s+=IC(CYLX+15,CYLY+55,'FT','#6b46c1');
+    s+=IC(CYLX+35,CYLY+55,'PT','#6b46c1');
+  }
+
+  // ══════════════════════════════════════════════════════
+  // LINE SIZE SUMMARY BOX (top right)
+  // ══════════════════════════════════════════════════════
+  const LSBX=M2X+95, LSBY=M2Y, LSBW=175, LSBH=130;
+  s+=R(LSBX,LSBY,LSBW,LSBH,'#fffff0','#744210',1.5,3);
+  s+=R(LSBX,LSBY,LSBW,13,'#744210','#744210',0,3);
+  s+=T(LSBX+LSBW/2,LSBY+10,'LINE SIZE SUMMARY','middle','white',8,true);
+  const lsData=[
+    ['MAIN H₂ HDR ('+fmt(r.pres,0)+' BARG)',schMain],
+    ['PURIFIER OUTLET',pipeSchedule(purOut.dn,r.pres-0.5)],
+    ['COMP INLET ('+fmt(r.pres,0)+' BARG)',schComp],
+    ['COMP OUTLET ('+fmt(r.storP,0)+' BARG)',schHigh],
+    ['CASCADE HEADER ('+fmt(r.storP,0)+' BARG)',schCasc],
+    ['CASCADE MANIFOLD',schMani],
+    ['FILLING STATION',schFill],
+    ['SEAL POT','50NB SCH10 SS304'],
+  ];
+  lsData.forEach(([l,v2],i)=>{
+    s+=T(LSBX+5,LSBY+24+i*13,l,'start','#4a5568',6.5,false,'Fira Code,monospace');
+    s+=T(LSBX+LSBW-5,LSBY+24+i*13,v2,'end',CH2,6.5,false,'Fira Code,monospace');
+  });
+
+  // ══════════════════════════════════════════════════════
+  // LEGEND
+  // ══════════════════════════════════════════════════════
+  const LGY=H-30;
+  s+=R(2,LGY-4,W-4,32,'#f7fafc','#e2e8f0',1,0);
+  [[14,LGY+12,CH2,'H₂ GAS'],
+   [100,LGY+12,CO2,'O₂ GAS'],
+   [185,LGY+12,CDM,'DM WATER'],
+   [270,LGY+12,CKO,'ELECTROLYTE/KOH'],
+   [380,LGY+12,CW,'COOLING WATER']].forEach(([x,y,col,lbl])=>{
+    s+=L(x,y,x+22,y,col,3);
+    s+=T(x+25,y+3,lbl,'start','#4a5568',8,false,'Fira Code,monospace');
+  });
+  s+=L(490,LGY+12,512,LGY+12,'#2d3748',1.5,'4,3');
+  s+=T(515,LGY+15,'DRAIN/VENT','start','#4a5568',8,false,'Fira Code,monospace');
+  s+=T(590,LGY+15,'○=TRANSMITTER  ◇=ANALYSER  △=PSV  ✦=GATE VALVE  NRV=NON-RETURN  BOL=BEGIN OF LIFE','start','#718096',7.5,false,'Fira Code,monospace');
+  s+=T(W-14,LGY+15,'FOR REFERENCE ONLY — NOT FOR CONSTRUCTION','end','#fc8181',7.5,false,'Fira Code,monospace');
+
+  s+='</svg>';
+  document.getElementById('pfd-wrap').innerHTML=s;
+}
+
+
+
+// ════════════════════════════════════════════════════════
+// RENDER: VENDOR COMPARE
+// ════════════════════════════════════════════════════════
+function renderVComp(r){
+  document.getElementById('r-vcomp').innerHTML=`
+  <div class="phd"><h2>Vendor Comparison</h2><p>Vendor datasheets + First Principles calculations</p></div>
+    <div class="kgrid">
+    <div class="kc tl"><div class="kl">Selected: ${r.vdName}</div><div class="kv">${fmt(r.stkCapPer,0)}</div><div class="ks">Nm³/hr per stack</div><div class="kicon">✓</div></div>
+    <div class="kc am"><div class="kl">Stacks × Installed</div><div class="kv">${r.nStks} × ${fmt(r.stkCapPer,0)}</div><div class="ks">= ${fmt(r.h2Installed,0)} Nm³/hr installed</div><div class="kicon">⚡</div></div>
+    <div class="kc bl"><div class="kl">Actual H₂ @ 100%</div><div class="kv">${fmt(r.h2Cap,1)}</div><div class="ks">Nm³/hr · ${fmt(r.H2_kg,1)} kg/hr</div><div class="kicon">H₂</div></div>
+    <div class="kc vi"><div class="kl">Spec Energy (AC)</div><div class="kv">${fmt(r.specEn,3)}</div><div class="ks">kWh/Nm³ BOL</div><div class="kicon">🔋</div></div>
+    <div class="kc em"><div class="kl">Operating Pressure</div><div class="kv">${fmt(r.pres,0)}</div><div class="ks">bar · ${fmt(r.tempC,0)}°C</div><div class="kicon">💧</div></div>
+    <div class="kc ro"><div class="kl">V_stack × I</div><div class="kv">${fmt(r.stkVol,0)} V × ${fmt(r.stkAmp,0)} A</div><div class="ks">= ${fmt(r.stkVol*r.stkAmp/1000,1)} kW per stack</div><div class="kicon">⚡</div></div>
+  </div>
+  <div class="card"><div class="chd"><h3>Technical Specifications</h3><div class="badge tl">LONGi · Perric/SLG · Stiesdal</div></div>
+    <div style="overflow-x:auto"><table class="ptbl">
+      <thead><tr><th style="text-align:left">Parameter</th>
+        <th style="color:var(--teal);${r.vdName==='LONGi'?'font-weight:800;text-decoration:underline':''}">LONGi${r.vdName==='LONGi'?' ★':''}</th>
+        <th style="color:var(--amber);${r.vdName==='Perric'?'font-weight:800;text-decoration:underline':''}">Perric/SLG${r.vdName==='Perric'?' ★':''}</th>
+        <th style="color:var(--blue);${r.vdName==='Stiesdal'?'font-weight:800;text-decoration:underline':''}">Stiesdal${r.vdName==='Stiesdal'?' ★':''}</th>
+      </tr></thead>
+      <tbody>
+        ${[
+          ['Stack Capacity','1,400 Nm³/hr','700 Nm³/hr','1,300 Nm³/hr'],
+          ['No. of Cells','336','150','720'],
+          ['Cell Area','1.8 m²','2.62 m²','—'],
+          ['Membrane','Composite','PPS','—'],
+          ['Pressure','≥1.6 MPa (16 bar)','<1.55 MPa (15.5 bar)','~30 bar'],
+          ['Temperature','85–93°C','~80°C','~80°C'],
+          ['DC Spec Energy (BOL)','4.323 kWh/Nm³','4.421 kWh/Nm³','5.082 kWh/Nm³'],
+          ['AC Spec Energy (Type-1)','—','—','5.189 kWh/Nm³'],
+          ['AC Spec Energy (Type-2)','—','—','5.646 kWh/Nm³'],
+          ['Faraday η @ 100%','—','97%','94.2%'],
+          ['I @ 100% (BOL)','10,600 A','11,790 A','4,400 A'],
+          ['V_stack @ 100% BOL','571 V (SOL)','262.5 V','1,418 V'],
+          ['V_stack EOL (80Khr)','634 V (+11%)','288.75 V (+10%)','1,517 V (+7%)'],
+          ['Start-up Time','20 min','60 min','—'],
+          ['Degradation','0.9% / 1000h','3.75% / 1000h','—'],
+          ['DM Water Spec','10 kg H₂O/kg H₂','10 kg H₂O/kg H₂','10 kg H₂O/kg H₂'],
+          ['H₂ Purity','≥99.8%','≥99.8%','≥99.8%'],
+          ['Compressor (5 units)','—','—','5 × 90 kW @ 30→200 bar'],
+          ['Dryer Power','—','—','85 kW rated / 42.5 kW op.'],
+          ['Total AC @ 100%',`~${fmt(r.h2Cap*VEND.LONGi.specEn*1.015+200,0)} kW`,`~${fmt(r.h2Cap*VEND.Perric.specEn*1.015+200,0)} kW`,`~${fmt(r.h2Cap*VEND.Stiesdal.specEn*1.015+200,0)} kW`],
+        ].map(([l,lo,pe,st],i)=>`<tr style="${i%2?'background:var(--bg)':''}">
+          <td style="font-weight:500;color:var(--t7)">${l}</td>
+          <td style="color:var(--teal);font-weight:600">${lo}</td>
+          <td style="color:var(--amber);font-weight:600">${pe}</td>
+          <td style="color:var(--blue);font-weight:700">${st}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>
+  </div>
+  <div class="ibox">★ = Currently selected vendor. All spec energies from vendor BOL datasheets. AC spec includes all auxiliary loads and electrical losses. First principles calculations use actual operating conditions from user inputs.</div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER: BOQ
+// ════════════════════════════════════════════════════════
+function renderBOQ(r){
+  const txL=20,skL=15;
+  const txPm=r.txBest_P?r.txBest_P.runs*r.nSec*r.nRP*txL:0;
+  const skPm=r.skBest_P?r.skBest_P.runs*2*r.nRP*skL:0;
+  const items=[
+    {n:1,item:'Rectifier Cabinets (Statcon)',spec:`${r.conn} · 24-pulse · Liquid cooled`,qty:r.nRTot,uom:'Sets'},
+    {n:2,item:'Rectifier Bridges (Statcon)',spec:`3,200A/bridge · GTP-00000/25-26`,qty:r.brgTot,uom:'Nos'},
+    {n:3,item:'Power Transformers',spec:`${r.stdTP>0?r.stdTP+' kVA':''} · ${r.txPulse}-pulse · ONAN/ONAF · 33kV`,qty:r.nRTot,uom:'Nos'},
+    {n:4,item:'TX→Rect Cable',spec:`1C×${r.txBest_P?r.txBest_P.size:'—'}mm² Al XLPE · est. ${txL}m/run`,qty:txPm>0?fmt(txPm,0):'—',uom:'m'},
+    {n:5,item:'Rect→Stack DC Cable',spec:`1C×${r.skBest_P?r.skBest_P.size:'—'}mm² Al · per polarity`,qty:skPm>0?fmt(skPm,0):'—',uom:'m'},
+    {n:6,item:`H₂ Electrolyser Stack (${r.vdName})`,spec:`${r.vd.cells||720} cells · ${fmt(r.pres,0)} bar · ${fmt(r.stkCapPer,0)} Nm³/hr`,qty:r.nStks,uom:'Nos'},
+    {n:7,item:'Gas Liquid Separator (H₂ side)',spec:`${fmt(r.pres,0)} bar service · per stack`,qty:r.nStks,uom:'Nos'},
+    {n:8,item:'Gas Liquid Separator (O₂ side)',spec:`${fmt(r.pres,0)} bar service · per stack`,qty:r.nStks,uom:'Nos'},
+    {n:9,item:'Deoxygenator',spec:`25 kW · Catalytic · H₂ purification`,qty:1,uom:'Set'},
+    {n:10,item:'H₂ Dryer / Purifier',spec:`85 kW rated · 42.5 kW op · PSA/Desiccant`,qty:1,uom:'Set'},
+    {n:11,item:'Storage Compressor',spec:`~${fmt(r.comp_kW/Math.max(1,r.nCompsInst),0)} kW each · ${fmt(r.pres,0)}→${fmt(r.storP,0)} bar`,qty:r.nCompsInst,uom:'Nos'},
+    {n:12,item:'H₂ Storage Vessels (1000L tube)',spec:`${fmt(r.storP,0)} bar · SS · ${r.STOR_HRS}h storage`,qty:r.nTubes_1000L,uom:'Nos'},
+    {n:13,item:'H₂ Storage Vessels (6000L bundle)',spec:`${fmt(r.storP,0)} bar · alternative`,qty:r.nTubes_6000L,uom:'Nos'},
+    {n:14,item:'RO-DM Water Package',spec:`13.2 kW rated · 6.55 kW op`,qty:1,uom:'Set'},
+    {n:15,item:'Dry Cooling Tower',spec:`${fmt(r.h2Cap*5*0.22*0.035,1)} kW est. · Ambient 42°C`,qty:Math.ceil(r.nStks/2)||1,uom:'Nos'},
+    {n:16,item:'Wet Cooling Tower',spec:`18.5 kW rated`,qty:1,uom:'Set'},
+    {n:17,item:'KOH Electrolyte (first fill)',spec:`${fmt(r.kohC*100,0)}% w/w · ${r.vdName}`,qty:fmt(r.KOH_kg,0),uom:'kg'},
+    {n:18,item:'DM Water System Design Flow',spec:`Vendor×1.05 safety factor`,qty:fmt(r.DM_prac_m3hr,3),uom:'m³/hr'},
+    {n:19,item:'H₂ Piping (Stack to GLS)',spec:`DN${r.pipe_stk_outlet.dn} SS316L · ${fmt(r.pres,0)} bar`,qty:1,uom:'Lot'},
+    {n:20,item:'H₂ Piping (GLS to Compressor)',spec:`DN${r.pipe_after_gls.dn} SS316L · ${fmt(r.pres,0)} bar`,qty:1,uom:'Lot'},
+    {n:21,item:'H₂ Piping (Comp to Storage)',spec:`DN${r.pipe_comp_out.dn} SS316L · ${fmt(r.storP,0)} bar`,qty:1,uom:'Lot'},
+    {n:22,item:'Isolation Valves (Gate) — H₂',spec:`SS316L · ${fmt(r.pres,0)} bar · Flanged`,qty:'TBD by layout',uom:'Nos'},
+    {n:23,item:'Control Valves (XV) — H₂',spec:`Fail-close · 30 bar`,qty:'TBD',uom:'Nos'},
+    {n:24,item:'PSVs — H₂/O₂ service',spec:`ASME stamped · 30 bar set`,qty:'TBD',uom:'Nos'},
+    {n:25,item:'Pressure Transmitters (PT)',spec:`0–50 bar · 4-20mA HART`,qty:'~24',uom:'Nos'},
+    {n:26,item:'Temperature Transmitters (TT)',spec:`RTD · 4-20mA HART`,qty:'~18',uom:'Nos'},
+    {n:27,item:'Flow Transmitters (FT)',spec:`Coriolis/Ultrasonic · H₂ rated`,qty:'~8',uom:'Nos'},
+    {n:28,item:'H₂ Purity Analyser (AT)',spec:`Thermal conductivity · 0-100% H₂`,qty:3,uom:'Nos'},
+    {n:29,item:'O₂ in H₂ Analyser',spec:`Electrochemical · ppm range`,qty:2,uom:'Nos'},
+    {n:30,item:'Solar PV Installed',spec:`${r.solP}% of load · CF ${fmt(r.solCF*100,0)}%`,qty:fmt(r.sol_inst,1),uom:'MWp'},
+    {n:31,item:'Wind Installed',spec:`${r.wndP}% of load · CF ${fmt(r.wndCF*100,0)}%`,qty:fmt(r.wnd_inst,1),uom:'MW'},
+  ];
+  document.getElementById('r-boq').innerHTML=`
+  <div class="phd"><h2>Bill of Quantities</h2><p>${r.vdName} · ${r.conn} · ${r.nStks} stacks · ${r.STOR_HRS}h storage · Preliminary</p></div>
+  <div class="card"><div class="chd"><h3>Equipment & Materials List</h3><div class="badge am">Preliminary Estimate</div></div>
+  <table class="boqt"><thead><tr><th>#</th><th>Item</th><th>Specification</th><th style="text-align:right">Qty</th><th style="text-align:right">UOM</th></tr></thead>
+  <tbody>${items.map(it=>`<tr><td style="color:var(--t3)">${it.n}</td><td style="font-weight:600;color:var(--t9)">${it.item}</td><td style="color:var(--t4);font-size:9.5px">${it.spec}</td><td style="text-align:right;color:var(--teal);font-weight:700">${it.qty}</td><td style="text-align:right;color:var(--t4)">${it.uom}</td></tr>`).join('')}</tbody>
+  </table></div>
+  <div class="wbox">⚠ Pipe quantities require layout drawings. Cable lengths estimated (TX→Rect: ${txL}m, Rect→Stack: ${skL}m). Valve and instrument counts based on P&ID basis — final count from HAZOP/detailed design. Storage vessel count based on ${r.STOR_HRS}h at 100% load, ${fmt(r.storP,0)} bar.</div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════
+syncSl();
+setVendor('Stiesdal', document.querySelectorAll('.vc')[2]);
+// Wire up the oninput update for nStks too
+document.getElementById('nStks').addEventListener('input', updateInstalledCap);
+document.getElementById('stkCapPer').addEventListener('input', updateInstalledCap);
+document.getElementById('faradayEff').addEventListener('input', updateInstalledCap);
+document.getElementById('opIneff').addEventListener('input', updateInstalledCap);
+window.addEventListener('load', ()=>setTimeout(runCalc,300));
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+   navigator.serviceWorker.register('./service-worker.js')
+    .then(function() {
+      console.log("Service Worker Registered");
+    });
+}
+</script>
+</body>
+</html>
